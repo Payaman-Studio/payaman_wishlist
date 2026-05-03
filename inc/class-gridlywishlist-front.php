@@ -442,9 +442,10 @@ if (! class_exists('GridlyWishlist_Front')) {
 			}
 
 			$list_wishlist = array_values(array_unique(array_filter($list_wishlist)));
+			$products = null;
 
 			if (! empty($list_wishlist)) {
-				$args     = array(
+				$args = array(
 					'post_type'           => 'product',
 					'posts_per_page'      => -1,
 					'post_status'         => 'publish',
@@ -453,21 +454,21 @@ if (! class_exists('GridlyWishlist_Front')) {
 					'ignore_sticky_posts' => true,
 				);
 				$products = new WP_Query($args);
-				if ($products->have_posts()) {
-					$this->render_wishlist_table($products, $active_collection);
-					wp_reset_postdata();
-				} else {
-					$this->render_empty_message();
-				}
-			} else {
-				$this->render_empty_message();
+			}
+
+			$this->render_wishlist_table($products, $active_collection);
+
+			if ($products) {
+				wp_reset_postdata();
 			}
 		}
+
 
 		/**
 		 * Render wishlists table output.
 		 *
-		 * @param WP_Query $products
+		 * @param WP_Query|null $products
+		 * @param string $active_collection
 		 * @return void
 		 */
 		private function render_wishlist_table($products, $active_collection = '')
@@ -540,95 +541,103 @@ if (! class_exists('GridlyWishlist_Front')) {
 				<?php endif; ?>
 			</div>
 			<div class="gridlywishlist-table-wrapper" data-empty-message="<?php echo esc_attr($empty_message); ?>" data-collection-id="<?php echo esc_attr($current_collection_id); ?>">
-				<div class="gridlywishlist-bulk-toolbar">
-					<div class="gridlywishlist-bulk-actions">
-						<label class="gridlywishlist-bulk-select-all-wrapper">
-							<input type="checkbox" class="gridlywishlist-bulk-select-all" />
-							<span><?php esc_html_e('Select All', 'gridlywishlist'); ?></span>
-						</label>
-						<button type="button" class="button gridlywishlist-bulk-remove" disabled>
-							<?php esc_html_e('Remove Selected', 'gridlywishlist'); ?>
-						</button>
-					</div>
-					<div class="gridlywishlist-bulk-controls">
-						<?php if (! empty($collections)) : ?>
-							<div class="gridlywishlist-bulk-move">
-								<select class="gridlywishlist-bulk-move-target">
-									<option value=""><?php esc_html_e('Move to…', 'gridlywishlist'); ?></option>
-									<?php foreach ($collections as $collection) : ?>
-										<option value="<?php echo esc_attr($collection['id']); ?>"><?php echo esc_html($collection['name']); ?></option>
-									<?php endforeach; ?>
-								</select>
-								<button type="button" class="button gridlywishlist-bulk-move-button" disabled><?php esc_html_e('Move Selected', 'gridlywishlist'); ?></button>
-							</div>
-						<?php endif; ?>
-					</div>
-				</div>
-				<div class="gridlywishlist-table-responsive">
-					<table class="gridlywishlist-table">
-					<thead>
-						<tr>
-							<th class="gridlywishlist-col-checkbox">
+				<?php if ($products && $products->have_posts()) : ?>
+					<div class="gridlywishlist-bulk-toolbar">
+						<div class="gridlywishlist-bulk-actions">
+							<label class="gridlywishlist-bulk-select-all-wrapper">
 								<input type="checkbox" class="gridlywishlist-bulk-select-all" />
-							</th>
-							<th><?php esc_html_e('Product', 'gridlywishlist'); ?></th>
-							<th><?php esc_html_e('Price', 'gridlywishlist'); ?></th>
-							<th><?php esc_html_e('Stock Status', 'gridlywishlist'); ?></th>
-							<th><?php esc_html_e('Collection', 'gridlywishlist'); ?></th>
-							<th class="gridlywishlist-col-actions"><?php esc_html_e('Actions', 'gridlywishlist'); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php
-						while ($products->have_posts()) :
-							$products->the_post();
-							global $product;
-							if (! $product) {
-								continue;
-							}
-							$product_id = absint($product->get_id());
-							$current_collection_for_product = '';
-							$collection_name = '';
-							if (is_user_logged_in()) {
-								$current_collection_for_product = gridlywishlist_get_collection_for_product(get_current_user_id(), $product_id);
-								if ($current_collection_for_product && ! empty($collections)) {
-									foreach ($collections as $collection) {
-										if ($collection['id'] === $current_collection_for_product) {
-											$collection_name = $collection['name'];
-											break;
+								<span><?php esc_html_e('Select All', 'gridlywishlist'); ?></span>
+							</label>
+							<button type="button" class="button gridlywishlist-bulk-remove" disabled>
+								<?php esc_html_e('Remove Selected', 'gridlywishlist'); ?>
+							</button>
+						</div>
+						<div class="gridlywishlist-bulk-controls">
+							<?php if (! empty($collections)) : ?>
+								<div class="gridlywishlist-bulk-move">
+									<select class="gridlywishlist-bulk-move-target">
+										<option value=""><?php esc_html_e('Move to…', 'gridlywishlist'); ?></option>
+										<?php foreach ($collections as $collection) : ?>
+											<option value="<?php echo esc_attr($collection['id']); ?>"><?php echo esc_html($collection['name']); ?></option>
+										<?php endforeach; ?>
+									</select>
+									<button type="button" class="button gridlywishlist-bulk-move-button" disabled><?php esc_html_e('Move Selected', 'gridlywishlist'); ?></button>
+								</div>
+							<?php endif; ?>
+						</div>
+					</div>
+					<div class="gridlywishlist-table-responsive">
+						<table class="gridlywishlist-table">
+						<thead>
+							<tr>
+								<th class="gridlywishlist-col-checkbox">
+									<input type="checkbox" class="gridlywishlist-bulk-select-all" />
+								</th>
+								<th><?php esc_html_e('Product', 'gridlywishlist'); ?></th>
+								<th><?php esc_html_e('Price', 'gridlywishlist'); ?></th>
+								<th><?php esc_html_e('Stock Status', 'gridlywishlist'); ?></th>
+								<th><?php esc_html_e('Collection', 'gridlywishlist'); ?></th>
+								<th class="gridlywishlist-col-actions"><?php esc_html_e('Actions', 'gridlywishlist'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							while ($products->have_posts()) :
+								$products->the_post();
+								global $product;
+								if (! $product) {
+									continue;
+								}
+								$product_id = absint($product->get_id());
+								$current_collection_for_product = '';
+								$collection_name = '';
+								if (is_user_logged_in()) {
+									$current_collection_for_product = gridlywishlist_get_collection_for_product(get_current_user_id(), $product_id);
+									if ($current_collection_for_product && ! empty($collections)) {
+										foreach ($collections as $collection) {
+											if ($collection['id'] === $current_collection_for_product) {
+												$collection_name = $collection['name'];
+												break;
+											}
 										}
 									}
 								}
-							}
-						?>
-							<tr data-product-id="<?php echo esc_attr($product_id); ?>" data-collection-id="<?php echo esc_attr($current_collection_for_product); ?>">
-								<td class="gridlywishlist-col-checkbox">
-									<input type="checkbox" class="gridlywishlist-bulk-checkbox" value="<?php echo esc_attr($product_id); ?>" />
-								</td>
-								<td class="gridlywishlist-table__product" data-title="<?php esc_attr_e('Product', 'gridlywishlist'); ?>">
-									<a href="<?php the_permalink(); ?>">
-										<?php echo wp_kses_post($product->get_image('thumbnail')); ?>
-										<span class="gridlywishlist-table__title"><?php echo esc_html(get_the_title()); ?></span>
-									</a>
-								</td>
-								<td class="gridlywishlist-table__price" data-title="<?php esc_attr_e('Price', 'gridlywishlist'); ?>">
-									<?php echo wp_kses_post($product->get_price_html()); ?>
-								</td>
-								<td class="gridlywishlist-table__stock" data-title="<?php esc_attr_e('Stock Status', 'gridlywishlist'); ?>">
-									<?php echo wp_kses_post($product->get_stock_status()); ?>
-								</td>
-								<td class="gridlywishlist-table__collection" data-title="<?php esc_attr_e('Collection', 'gridlywishlist'); ?>"><?php echo esc_html($collection_name); ?></td>
-								<td class="gridlywishlist-table__actions" data-title="<?php esc_attr_e('Actions', 'gridlywishlist'); ?>">
-									<?php woocommerce_template_loop_add_to_cart(); ?>
-									<?php echo do_shortcode('[gridlywishlist_button product_id="' . $product_id . '"]'); ?>
-								</td>
-							</tr>
-						<?php
-						endwhile;
-						?>
-					</tbody>
-				</table>
-				</div>
+							?>
+								<tr data-product-id="<?php echo esc_attr($product_id); ?>" data-collection-id="<?php echo esc_attr($current_collection_for_product); ?>">
+									<td class="gridlywishlist-col-checkbox">
+										<input type="checkbox" class="gridlywishlist-bulk-checkbox" value="<?php echo esc_attr($product_id); ?>" />
+									</td>
+									<td class="gridlywishlist-table__product" data-title="<?php esc_attr_e('Product', 'gridlywishlist'); ?>">
+										<a href="<?php the_permalink(); ?>">
+											<?php echo wp_kses_post($product->get_image('thumbnail')); ?>
+											<span class="gridlywishlist-table__title"><?php echo esc_html(get_the_title()); ?></span>
+										</a>
+									</td>
+									<td class="gridlywishlist-table__price" data-title="<?php esc_attr_e('Price', 'gridlywishlist'); ?>">
+										<?php echo wp_kses_post($product->get_price_html()); ?>
+									</td>
+									<td class="gridlywishlist-table__stock" data-title="<?php esc_attr_e('Stock Status', 'gridlywishlist'); ?>">
+										<?php echo $product->is_in_stock() ? '<span class="gridlywishlist-in-stock">' . esc_html__('In Stock', 'gridlywishlist') . '</span>' : '<span class="gridlywishlist-out-of-stock">' . esc_html__('Out of Stock', 'gridlywishlist') . '</span>'; ?>
+									</td>
+									<td class="gridlywishlist-table__collection" data-title="<?php esc_attr_e('Collection', 'gridlywishlist'); ?>">
+										<?php echo esc_html($collection_name); ?>
+									</td>
+									<td class="gridlywishlist-table__actions" data-title="<?php esc_attr_e('Actions', 'gridlywishlist'); ?>">
+										<?php if ($product->is_type('simple')) : ?>
+											<a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-quantity="1" class="button product_type_simple add_to_cart_button ajax_add_to_cart" data-product_id="<?php echo esc_attr($product_id); ?>" rel="nofollow"><?php esc_html_e('Add to Cart', 'gridlywishlist'); ?></a>
+										<?php else : ?>
+											<a href="<?php the_permalink(); ?>" class="button"><?php esc_html_e('Select Options', 'gridlywishlist'); ?></a>
+										<?php endif; ?>
+										<button type="button" class="gridlywishlist-remove-item" data-product-id="<?php echo esc_attr($product_id); ?>" data-collection-id="<?php echo esc_attr($current_collection_id); ?>"><?php esc_html_e('Remove', 'gridlywishlist'); ?></button>
+									</td>
+								</tr>
+							<?php endwhile; ?>
+						</tbody>
+						</table>
+					</div>
+				<?php else : ?>
+					<?php $this->render_empty_message(); ?>
+				<?php endif; ?>
 			</div>
 		<?php
 		}
