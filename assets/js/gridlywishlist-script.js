@@ -428,12 +428,15 @@ jQuery(function ($) {
         }
         updateCollectionsData(response.data.collections);
         pendingCollectionId = response.data.collection.id;
-        renderCollectionOptions(pendingCollectionId);
+
+        // Reset view
         modal.find(".gridlywishlist-collection-name").val("");
         modal.find(".gridlywishlist-collection-public").prop("checked", false);
-        modal
-          .find(".gridlywishlist-collection-create")
-          .attr("aria-hidden", "true");
+        modal.find(".gridlywishlist-collection-create").hide();
+        modal.find(".gridlywishlist-collection-select-wrapper").show();
+        modal.find(".gridlywishlist-modal__manage-actions").show();
+        
+        renderCollectionOptions(pendingCollectionId);
       },
       error: function () {
         openMessageModal(gridlywishlist_object.error_message);
@@ -634,9 +637,21 @@ jQuery(function ($) {
     function (event) {
       event.preventDefault();
       var modal = ensureModal();
-      var $create = modal.find(".gridlywishlist-collection-create");
-      var expanded = $create.attr("aria-hidden") === "false";
-      $create.attr("aria-hidden", expanded ? "true" : "false");
+      modal.find(".gridlywishlist-collection-select-wrapper").hide();
+      modal.find(".gridlywishlist-modal__manage-actions").hide();
+      modal.find(".gridlywishlist-collection-create").fadeIn(200);
+    },
+  );
+
+  $(document).on(
+    "click",
+    ".gridlywishlist-collection-create-cancel",
+    function (event) {
+      event.preventDefault();
+      var modal = ensureModal();
+      modal.find(".gridlywishlist-collection-create").hide();
+      modal.find(".gridlywishlist-collection-select-wrapper").fadeIn(200);
+      modal.find(".gridlywishlist-modal__manage-actions").fadeIn(200);
     },
   );
 

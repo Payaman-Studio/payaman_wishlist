@@ -651,18 +651,27 @@ if (! class_exists('GridlyWishlist_Front')) {
 						</div>
 						<div class="gridlywishlist-modal__view gridlywishlist-modal__view--manage">
 							<h3><?php esc_html_e('Simpan ke Koleksi', 'gridlywishlist'); ?></h3>
-							<label class="gridlywishlist-collection-select-label">
-								<span><?php esc_html_e('Pilih Koleksi', 'gridlywishlist'); ?></span>
-								<select class="gridlywishlist-collection-select"></select>
-							</label>
-							<button type="button" class="button gridlywishlist-collection-create-toggle"><?php esc_html_e('Koleksi Baru', 'gridlywishlist'); ?></button>
-							<div class="gridlywishlist-collection-create" aria-hidden="true">
-								<input type="text" class="gridlywishlist-collection-name" placeholder="<?php esc_attr_e('Nama koleksi', 'gridlywishlist'); ?>" />
-								<label class="gridlywishlist-collection-public-label">
-									<input type="checkbox" class="gridlywishlist-collection-public" />
-									<?php esc_html_e('Jadikan koleksi publik', 'gridlywishlist'); ?>
-								</label>
-								<button type="button" class="button button-primary gridlywishlist-collection-create-submit"><?php esc_html_e('Buat Koleksi', 'gridlywishlist'); ?></button>
+							<div class="gridlywishlist-modal__manage-content">
+								<div class="gridlywishlist-collection-select-wrapper">
+									<label class="gridlywishlist-collection-select-label">
+										<span><?php esc_html_e('Pilih Koleksi', 'gridlywishlist'); ?></span>
+										<select class="gridlywishlist-collection-select"></select>
+									</label>
+									<a href="#" class="gridlywishlist-collection-create-toggle">+ <?php esc_html_e('Koleksi Baru', 'gridlywishlist'); ?></a>
+								</div>
+								
+								<div class="gridlywishlist-collection-create" style="display: none;">
+									<h4><?php esc_html_e('Buat Koleksi Baru', 'gridlywishlist'); ?></h4>
+									<input type="text" class="gridlywishlist-collection-name" placeholder="<?php esc_attr_e('Nama koleksi', 'gridlywishlist'); ?>" />
+									<label class="gridlywishlist-collection-public-label">
+										<input type="checkbox" class="gridlywishlist-collection-public" />
+										<?php esc_html_e('Jadikan koleksi publik', 'gridlywishlist'); ?>
+									</label>
+									<div class="gridlywishlist-collection-create-actions">
+										<button type="button" class="button button-primary gridlywishlist-collection-create-submit"><?php esc_html_e('Buat', 'gridlywishlist'); ?></button>
+										<button type="button" class="button gridlywishlist-collection-create-cancel"><?php esc_html_e('Batal', 'gridlywishlist'); ?></button>
+									</div>
+								</div>
 							</div>
 							<div class="gridlywishlist-modal__manage-actions">
 								<button type="button" class="button button-primary gridlywishlist-collection-apply"><?php esc_html_e('Simpan', 'gridlywishlist'); ?></button>
