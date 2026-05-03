@@ -1,0 +1,90 @@
+/* Admin Menu Tabs */
+.gridlywishlist-menu {
+    margin: 20px 0 0 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid #ccc;
+}
+
+.gridlywishlist-menu li {
+    display: inline-block;
+    margin: 0;
+}
+
+.gridlywishlist-menu li a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-bottom: none;
+    color: #0073aa;
+    font-weight: 600;
+}
+
+.gridlywishlist-menu li a.active {
+    background: #fff;
+    border-color: #ccc;
+    color: #333;
+    position: relative;
+    top: 1px;
+}
+
+/* Form Sections */
+.form-section {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 20px;
+}
+
+/* Switch Slider */
+.gridlywishlist-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.gridlywishlist-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.gridlywishlist-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.gridlywishlist-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .gridlywishlist-slider {
+    background-color: #0073aa;
+}
+
+input:checked + .gridlywishlist-slider:before {
+    transform: translateX(20px);
+}
+
+.image-preview-wrapper img {
+    border: 1px solid #eee;
+    padding: 5px;
+    background: #fff;
+}

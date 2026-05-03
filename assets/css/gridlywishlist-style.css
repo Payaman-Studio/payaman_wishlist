@@ -1,0 +1,551 @@
+:root {
+  --gw-primary: #007cff;
+  --gw-primary-hover: #0066d6;
+  --gw-bg: #ffffff;
+  --gw-border: #eeeeee;
+  --gw-text: #333333;
+  --gw-text-muted: #666666;
+  --gw-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --gw-radius: 8px;
+}
+
+/* Loading State */
+.gridlywishlist .gridlywishlist-loading,
+.gridlywishlist img.gridlywishlist-loading,
+ul.products li.product .gridlywishlist-loading {
+  display: none !important;
+  margin: 0 8px;
+  width: 16px !important;
+  height: 16px !important;
+  vertical-align: middle;
+  border: none !important;
+  padding: 0 !important;
+  background: none !important;
+}
+
+.gridlywishlist .gridlywishlist-loading.on,
+.gridlywishlist img.gridlywishlist-loading.on {
+  display: inline-block !important;
+}
+
+/* Wishlist Button */
+.gridlywishlist .gridlywishlist-button {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.gridlywishlist .gridlywishlist-button:hover {
+  opacity: 0.8;
+}
+
+/* Overlay Position */
+.woocommerce ul.products li.product,
+.woocommerce div.product .woocommerce-product-gallery {
+  position: relative;
+}
+
+.gridlywishlist-position-overlay_top_left {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+}
+
+.gridlywishlist-position-overlay_top_left .gridlywishlist-button {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  padding: 8px 14px;
+  border-radius: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-size: 13px;
+}
+
+/* Wishlist Page Table */
+.gridlywishlist-table-wrapper {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.gridlywishlist-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 30px;
+  border: 1px solid var(--gw-border);
+  border-radius: var(--gw-radius);
+  overflow: hidden;
+  table-layout: fixed;
+}
+
+.gridlywishlist-table thead th {
+  background: #f8f9fa;
+  padding: 16px 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--gw-text-muted);
+  border-bottom: 2px solid var(--gw-border);
+  text-align: left;
+}
+
+.gridlywishlist-table tbody td {
+  padding: 20px 15px;
+  border-bottom: 1px solid var(--gw-border);
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+.gridlywishlist-col-checkbox {
+  width: 50px;
+  text-align: center !important;
+}
+.gridlywishlist-table th:nth-child(2),
+.gridlywishlist-table td:nth-child(2) {
+  width: 35%;
+}
+.gridlywishlist-table th:nth-child(3),
+.gridlywishlist-table td:nth-child(3) {
+  width: 12%;
+}
+.gridlywishlist-table th:nth-child(4),
+.gridlywishlist-table td:nth-child(4) {
+  width: 15%;
+}
+.gridlywishlist-table th:nth-child(5),
+.gridlywishlist-table td:nth-child(5) {
+  width: 15%;
+}
+.gridlywishlist-col-actions {
+  width: 18%;
+}
+
+.gridlywishlist-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.gridlywishlist-table__product a {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.gridlywishlist-table__product img {
+  width: 60px !important;
+  height: 60px !important;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--gw-border);
+  flex-shrink: 0;
+}
+
+.gridlywishlist-table__title {
+  font-weight: 600;
+  color: var(--gw-text);
+  font-size: 14px;
+  line-height: 1.4;
+  transition: color 0.2s;
+}
+
+.gridlywishlist-table__price {
+  font-weight: 700;
+  color: var(--gw-primary);
+  font-size: 15px;
+}
+
+.gridlywishlist-table__stock {
+  text-transform: capitalize;
+  font-size: 13px;
+  color: var(--gw-text-muted);
+}
+
+/* Collection Tabs */
+.gridlywishlist-collections {
+  margin-bottom: 25px;
+}
+
+.gridlywishlist-collection-tabs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.gridlywishlist-collection-tabs li {
+  background: #fff;
+  border: 1px solid var(--gw-border);
+  border-radius: 12px;
+  padding: 12px;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 200px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.gridlywishlist-collection-tabs li.is-active {
+  border-color: var(--gw-primary);
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(0, 124, 255, 0.08);
+}
+
+.gridlywishlist-collection-tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.gridlywishlist-collection-link {
+  text-decoration: none !important;
+  color: var(--gw-text-muted) !important;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.gridlywishlist-collection-link.active {
+  color: var(--gw-primary) !important;
+}
+
+.gridlywishlist-collection-visibility {
+  background: none !important;
+  border: none !important;
+  padding: 4px !important;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  box-shadow: none !important;
+}
+
+.gridlywishlist-collection-visibility:hover {
+  opacity: 1;
+}
+
+.gridlywishlist-collection-share-info {
+  display: flex;
+  gap: 5px;
+  background: #f8f9fa;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--gw-border);
+  margin-top: 5px;
+  align-items: center;
+}
+
+.gridlywishlist-share-url-input {
+  flex: 1;
+  font-size: 11px !important;
+  padding: 4px !important;
+  border: none !important;
+  background: transparent !important;
+  width: 100% !important;
+  margin: 0 !important;
+  color: var(--gw-text-muted) !important;
+}
+
+.gridlywishlist-copy-share-url,
+.gridlywishlist-whatsapp-share {
+  font-size: 10px !important;
+  padding: 4px 8px !important;
+  height: auto !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+}
+
+.gridlywishlist-whatsapp-share {
+  background-color: #25d366 !important;
+  color: #fff !important;
+  border-color: #25d366 !important;
+}
+
+.gridlywishlist-whatsapp-share:hover {
+  background-color: #128c7e !important;
+}
+
+/* Bulk Toolbar */
+.gridlywishlist-table__collection {
+  color: var(--gw-text-muted);
+  font-size: 14px;
+}
+
+.gridlywishlist-table__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.gridlywishlist-table__actions .button {
+  width: 100% !important;
+  max-width: 180px;
+  margin: 0 !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  text-align: center;
+}
+
+.gridlywishlist-table__actions .gridlywishlist-button {
+  font-size: 12px;
+  color: #999;
+  text-decoration: none;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gridlywishlist-table__actions .gridlywishlist-button:hover {
+  color: #f44336;
+}
+
+.gridlywishlist-col-actions {
+  text-align: center !important;
+}
+
+/* Responsive Table */
+.gridlywishlist-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media screen and (max-width: 768px) {
+  .gridlywishlist-table thead {
+    display: none;
+  }
+  .gridlywishlist-table tbody tr {
+    display: block;
+    border-bottom: 2px solid var(--gw-border);
+    padding: 15px 0;
+  }
+  .gridlywishlist-table tbody td {
+    display: block;
+    text-align: right;
+    padding: 10px 20px;
+    border: none;
+  }
+  .gridlywishlist-table tbody td::before {
+    content: attr(data-title);
+    float: left;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--gw-text-muted);
+  }
+  .gridlywishlist-table__product {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  }
+  .gridlywishlist-table__actions {
+    align-items: flex-end;
+  }
+}
+
+.gridlywishlist-bulk-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 15px 25px;
+  background: var(--gw-bg);
+  border-radius: var(--gw-radius);
+  border: 1px solid var(--gw-border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.gridlywishlist-bulk-toolbar .gridlywishlist-bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.gridlywishlist-bulk-toolbar .gridlywishlist-bulk-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gridlywishlist-bulk-select-all-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--gw-text);
+  cursor: pointer;
+}
+
+.gridlywishlist-bulk-move {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gridlywishlist-bulk-move select {
+  border-radius: 30px;
+  padding: 8px 15px;
+  border: 1px solid var(--gw-border);
+  background: #fcfcfc;
+  font-size: 13px;
+  min-width: 140px;
+}
+
+.gridlywishlist-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999; /* Ensure it is above everything */
+}
+
+.gridlywishlist-modal.is-visible {
+  display: flex;
+}
+
+.gridlywishlist-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* Modal Styling */
+.gridlywishlist-modal__dialog {
+  position: relative;
+  background: var(--gw-bg);
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 400px;
+  width: calc(100% - 40px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  animation: gwModalFadeIn 0.3s ease-out;
+}
+
+@keyframes gwModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gridlywishlist-modal__message {
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.gridlywishlist-modal__view {
+  display: none;
+}
+
+.gridlywishlist-modal[data-view="message"]
+  .gridlywishlist-modal__view--message {
+  display: block;
+}
+
+.gridlywishlist-modal[data-view="manage"] .gridlywishlist-modal__view--manage {
+  display: block;
+}
+
+.gridlywishlist-modal__actions,
+.gridlywishlist-modal__manage-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.gridlywishlist-collection-select-label select,
+.gridlywishlist-collection-create input[type="text"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--gw-border);
+  border-radius: var(--gw-radius);
+  margin-top: 8px;
+  background: #fcfcfc;
+}
+
+.gridlywishlist-collection-create {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: var(--gw-radius);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gridlywishlist-collection-create .button {
+  align-self: center;
+}
+
+.gridlywishlist-collection-create-toggle {
+  font-size: 14px;
+  color: var(--gw-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+/* Buttons consistency */
+.gridlywishlist-modal .button,
+.gridlywishlist-bulk-toolbar .button {
+  border-radius: 30px !important;
+  padding: 10px 24px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s !important;
+}
+
+.gridlywishlist-modal .button-primary,
+.gridlywishlist-bulk-toolbar .button-primary {
+  background: var(--gw-primary) !important;
+  color: #fff !important;
+}
+
+.gridlywishlist-modal .button-primary:hover {
+  background: var(--gw-primary-hover) !important;
+}
+
+/* Empty State */
+.gridlywishlist-empty-message {
+  padding: 50px 20px;
+  background: #fff;
+  border: 2px dashed var(--gw-border);
+  border-radius: var(--gw-radius);
+  color: var(--gw-text-muted);
+}
+
+.gridlywishlist-shared-notice {
+  background: #e7f5ff;
+  border: 1px solid #a5d8ff;
+  padding: 12px 20px;
+  border-radius: var(--gw-radius);
+  margin-bottom: 20px;
+  color: #1971c2;
+}
