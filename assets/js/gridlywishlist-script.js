@@ -748,4 +748,69 @@ jQuery(function ($) {
       $btn.text(originalText);
     }, 2000);
   });
+
+  // Handle WooCommerce Added to Cart
+  $(document.body).on(
+    "added_to_cart",
+    function (event, fragments, cart_hash, $button) {
+      if (gridlywishlist_object.remove_after_add_to_cart !== "yes") {
+        return;
+      }
+
+      var productId = $button.data("product_id");
+      if (!productId) {
+        // Fallback for some themes
+        productId = $button.attr("value");
+      }
+
+      if (!productId) return;
+
+      // Find all wishlist buttons for this product and toggle them off
+      $(
+        '.gridlywishlist-button[data-product-id="' +
+          productId +
+          '"], .gridlywishlist[data-product-id="' +
+          productId +
+          '"]',
+      ).each(function () {
+        var $btn = $(this);
+        $btn.removeClass("on").addClass("off");
+        $btn.find("span").text(gridlywishlist_object.off_val);
+        // If image type
+        if (gridlywishlist_object.button_type === "image") {
+          $btn.find("img").attr("src", gridlywishlist_object.off_val);
+        }
+
+        // Update count if visible
+        if (gridlywishlist_object.gridlywishlist_count === "yes") {
+          var $countLabel = $btn.find(".gridlywishlist-count-label");
+          if ($countLabel.length) {
+            // Since it was added to cart, and we remove from wishlist, 
+            // the count for this specific product on the button might need recalculation.
+            // But usually the button shows total wishlist count or product-specific?
+            // Actually our formatLabel adds count in brackets.
+          }
+        }
+      });
+
+      // If we are on the wishlist page, remove the row
+      var $wishlistRow = $(
+        '.gridlywishlist-table tr[data-product-id="' + productId + '"]',
+      );
+      if ($wishlistRow.length) {
+        $wishlistRow.fadeOut(300, function () {
+          $(this).remove();
+          // Check if table is empty
+          if ($(".gridlywishlist-table tbody tr").length === 0) {
+            var emptyMsg = $(".gridlywishlist-table-wrapper").data(
+              "empty-message",
+            );
+            $(".gridlywishlist-table-wrapper").html(
+              '<p class="gridlywishlist-empty">' + emptyMsg + "</p>",
+            );
+          }
+        });
+      }
+    },
+  );
 });

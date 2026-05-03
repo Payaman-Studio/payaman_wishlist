@@ -87,6 +87,16 @@ if (! defined('ABSPATH')) {
 			</td>
 		</tr>
 		<tr>
+			<th scope="row"><label for="gridlywishlist_remove_after_add_to_cart"><?php esc_html_e('Remove After Add to Cart', 'gridlywishlist'); ?></label></th>
+			<td>
+				<label class="gridlywishlist-switch">
+					<input type="checkbox" name="gridlywishlist_remove_after_add_to_cart" id="gridlywishlist_remove_after_add_to_cart" value="yes" <?php checked(gridlywishlist_setting('remove_after_add_to_cart'), 'yes'); ?> />
+					<span class="gridlywishlist-slider round"></span>
+				</label>
+				<p class="description"><?php esc_html_e('Automatically remove product from wishlist after adding to cart', 'gridlywishlist'); ?></p>
+			</td>
+		</tr>
+		<tr>
 			<th scope="row"><?php esc_html_e('Marketing Alerts', 'gridlywishlist'); ?></th>
 			<td>
 				<label>

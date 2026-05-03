@@ -102,6 +102,7 @@ if (! class_exists('GridlyWishlist_Admin_Page')) {
 					'enable_remove_success_message' => isset($post_data['enable_remove_success_message']) ? 'yes' : 'no',
 					'enable_price_drop_alert'       => isset($post_data['enable_price_drop_alert']) ? 'yes' : 'no',
 					'enable_stock_alert'            => isset($post_data['enable_stock_alert']) ? 'yes' : 'no',
+					'remove_after_add_to_cart'      => isset($post_data['gridlywishlist_remove_after_add_to_cart']) ? 'yes' : 'no',
 					'button'                        => array(
 						'text'  => array(
 							'val_on'  => isset($post_data['gridlywishlist_text_val_on']) ? sanitize_text_field($post_data['gridlywishlist_text_val_on']) : '',

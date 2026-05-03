@@ -39,7 +39,67 @@ if (! class_exists('GridlyWishlist_Front')) {
 			add_shortcode('gridlywishlist_list', array($this, 'wishlist_list'));
 			add_action('wp_enqueue_scripts', array($this, 'wp_enqueue_scripts'));
 			add_action('wp_footer', array($this, 'render_modal_template'));
+			add_action('woocommerce_add_to_cart', array($this, 'handle_add_to_cart'), 10, 6);
 			$this->set_default_gridlywishlist_button();
+		}
+
+		/**
+		 * Handle auto removal from wishlist when product added to cart.
+		 */
+		public function handle_add_to_cart($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data)
+		{
+			if (gridlywishlist_setting('remove_after_add_to_cart') !== 'yes') {
+				return;
+			}
+
+			$user_id = get_current_user_id();
+
+			// For Logged in users
+			if ($user_id) {
+				// Remove from ALL collections for this user
+				global $wpdb;
+				$items_table = gridlywishlist_get_table_name('items');
+				$collections_table = gridlywishlist_get_table_name('collections');
+
+				$wpdb->query(
+					$wpdb->prepare(
+						"DELETE i FROM {$items_table} i 
+						 INNER JOIN {$collections_table} c ON i.collection_id = c.id 
+						 WHERE c.user_id = %d AND i.product_id = %d",
+						$user_id,
+						$product_id
+					)
+				);
+
+				// Also sync to legacy post meta
+				$wishlists = gridlywishlist_get_wishlists($product_id);
+				$user_key  = (string) $user_id;
+				if (in_array($user_key, $wishlists, true)) {
+					$wishlists = array_values(array_filter($wishlists, function($w) use ($user_key) { return $w !== $user_key; }));
+					gridlywishlist_store_wishlists($product_id, $wishlists);
+				}
+			} else {
+				// For Guests (Cookie based)
+				if (isset($_COOKIE['gridlywishlist_product'])) {
+					$cookie_data = json_decode(wp_unslash($_COOKIE['gridlywishlist_product']), true);
+					if (is_array($cookie_data)) {
+						$product_id_str = (string) $product_id;
+						if (($key = array_search($product_id_str, $cookie_data)) !== false) {
+							unset($cookie_data[$key]);
+							$cookie_data = array_values($cookie_data);
+							setcookie('gridlywishlist_product', wp_json_encode($cookie_data), time() + (30 * DAY_IN_SECONDS), '/');
+						}
+					}
+				}
+
+				// Also sync to legacy post meta using IP
+				$ip = gridlywishlist_client_ip();
+				$wishlists = gridlywishlist_get_wishlists($product_id);
+				if (in_array($ip, $wishlists, true)) {
+					$wishlists = array_values(array_filter($wishlists, function($w) use ($ip) { return $w !== $ip; }));
+					gridlywishlist_store_wishlists($product_id, $wishlists);
+				}
+			}
 		}
 
 		/**
@@ -149,6 +209,7 @@ if (! class_exists('GridlyWishlist_Front')) {
 				'gridlywishlist_count'            => gridlywishlist_setting('gridlywishlist_count', 'no'),
 				'enable_add_success_message'    => gridlywishlist_setting('enable_add_success_message', 'no'),
 				'enable_remove_success_message' => gridlywishlist_setting('enable_remove_success_message', 'no'),
+				'remove_after_add_to_cart'      => gridlywishlist_setting('remove_after_add_to_cart', 'no'),
 				'add_success_message'           => gridlywishlist_setting('add_success'),
 				'remove_success_message'        => gridlywishlist_setting('remove_success'),
 				'required_login_message'        => gridlywishlist_setting('required_login_message', __('You must be logged in.', 'gridlywishlist')),
