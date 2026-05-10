@@ -32,50 +32,7 @@ if (! defined('ABSPATH')) {
 				<p class="description"><?php esc_html_e('Displays the number of wishlists in each product', 'payaman_wishlist'); ?> <br /><span style="color: red;"><?php esc_html_e('! this will impact on the speed of your website', 'payaman_wishlist'); ?></span></p>
 			</td>
 		</tr>
-		<tr class="payaman_wishlist_enabled_row">
-			<th scope="row"><?php esc_html_e('Display Button On', 'payaman_wishlist'); ?></th>
-			<td>
-				<table class="payaman_wishlist-default-table">
-					<tr>
-						<td width="50">
-							<label class="payaman_wishlist-switch">
-								<input type="checkbox" name="display_on[]" value="single_product" <?php echo !empty(payaman_wishlist_setting('display_on')) && in_array('single_product', payaman_wishlist_setting('display_on')) ? 'checked' : ''; ?> />
-								<span class="payaman_wishlist-slider round"></span>
-							</label>
-						</td>
-						<td><?php esc_html_e('Single Product', 'payaman_wishlist'); ?></td>
-					</tr>
-					<tr>
-						<td>
-							<label class="payaman_wishlist-switch">
-								<input type="checkbox" name="display_on[]" value="loop_product" <?php echo !empty(payaman_wishlist_setting('display_on')) && in_array('loop_product', payaman_wishlist_setting('display_on')) ? 'checked' : ''; ?> />
-								<span class="payaman_wishlist-slider round"></span>
-							</label>
-						</td>
-						<td><?php esc_html_e('Product Loop', 'payaman_wishlist'); ?></td>
-					</tr>
-				</table>
-				<p class="description"><?php esc_html_e('Choose where your wishlist button will appear or you can use shortcode [payaman_wishlist_button]', 'payaman_wishlist'); ?></p>
-			</td>
-		</tr>
-		<tr class="payaman_wishlist_enabled_row">
-			<th scope="row"><label for="display_position_button"><?php esc_html_e('Button Position', 'payaman_wishlist'); ?></label></th>
-			<td>
-				<select name="display_position_button" id="display_position_button">
-					<?php
-					$button_positions = array(
-						'after_add_to_cart' => __('After Add to Cart', 'payaman_wishlist'),
-						'overlay_top_left'  => __('Overlay Product Image', 'payaman_wishlist'),
-					);
-					$current_position = payaman_wishlist_setting('display_position_button', 'after_add_to_cart');
-					foreach ($button_positions as $value => $label) :
-					?>
-						<option value="<?php echo esc_attr($value); ?>" <?php selected($current_position, $value); ?>><?php echo esc_html($label); ?></option>
-					<?php endforeach; ?>
-				</select>
-				<p class="description"><?php esc_html_e('Control where the wishlist button is injected.', 'payaman_wishlist'); ?></p>
-			</td>
-		</tr>
+		
 		<tr class="payaman_wishlist_enabled_row">
 			<th scope="row"><label for="payaman_wishlist_required_login"><?php esc_html_e('Required Login', 'payaman_wishlist'); ?></label></th>
 			<td>

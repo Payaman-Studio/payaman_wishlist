@@ -103,6 +103,10 @@ if (! class_exists('Payaman_Wishlist_Admin_Page')) {
 					'enable_price_drop_alert'       => isset($post_data['enable_price_drop_alert']) ? 'yes' : 'no',
 					'enable_stock_alert'            => isset($post_data['enable_stock_alert']) ? 'yes' : 'no',
 					'remove_after_add_to_cart'      => isset($post_data['payaman_wishlist_remove_after_add_to_cart']) ? 'yes' : 'no',
+					'email_stock_subject'           => isset($post_data['email_stock_subject']) ? sanitize_text_field($post_data['email_stock_subject']) : '',
+					'email_stock_body'              => isset($post_data['email_stock_body']) ? sanitize_textarea_field($post_data['email_stock_body']) : '',
+					'email_price_subject'           => isset($post_data['email_price_subject']) ? sanitize_text_field($post_data['email_price_subject']) : '',
+					'email_price_body'              => isset($post_data['email_price_body']) ? sanitize_textarea_field($post_data['email_price_body']) : '',
 					'button'                        => array(
 						'text'  => array(
 							'val_on'  => isset($post_data['payaman_wishlist_text_val_on']) ? sanitize_text_field($post_data['payaman_wishlist_text_val_on']) : '',

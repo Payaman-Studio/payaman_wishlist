@@ -74,36 +74,31 @@ if (! class_exists('Payaman_Wishlist_Alerts')) {
 			$product = wc_get_product($product_id);
 			$product_name = $product->get_name();
 			$product_url = get_permalink($product_id);
+			$site_name = get_bloginfo('name');
+
+			$default_stock_subject = 'Good news! {product_name} is back in stock!';
+			$default_stock_body = "Hi {user_name},\n\nThe product '{product_name}' in your wishlist is now back in stock!\n\nView product: {product_url}";
+			$default_price_subject = 'Price drop alert for {product_name}!';
+			$default_price_body = "Hi {user_name},\n\nGreat news! The price of '{product_name}' in your wishlist has just dropped.\n\nView product: {product_url}";
+
+			$raw_subject = ($type === 'stock') ? payaman_wishlist_setting('email_stock_subject', $default_stock_subject) : payaman_wishlist_setting('email_price_subject', $default_price_subject);
+			$raw_body = ($type === 'stock') ? payaman_wishlist_setting('email_stock_body', $default_stock_body) : payaman_wishlist_setting('email_price_body', $default_price_body);
 
 			foreach ($user_ids as $user_id) {
 				$user = get_userdata($user_id);
 				if (! $user) continue;
 
-				$to = $user->user_email;
-				$subject = '';
-				$message = '';
+				$replacements = array(
+					'{user_name}'    => $user->display_name,
+					'{product_name}' => $product_name,
+					'{product_url}'  => $product_url,
+					'{site_name}'    => $site_name
+				);
 
-				if ($type === 'stock') {
-					$subject = sprintf(__('Good news! %s is back in stock!', 'payaman_wishlist'), $product_name);
-					$message = sprintf(
-						__("Hi %s,\n\nThe product '%s' in your wishlist is now back in stock. Grab it before it's gone again!\n\nView product: %s", 'payaman_wishlist'),
-						$user->display_name,
-						$product_name,
-						$product_url
-					);
-				} else if ($type === 'price') {
-					$subject = sprintf(__('Price drop alert for %s!', 'payaman_wishlist'), $product_name);
-					$message = sprintf(
-						__("Hi %s,\n\nGreat news! The price of '%s' in your wishlist has just dropped. Check it out now!\n\nView product: %s", 'payaman_wishlist'),
-						$user->display_name,
-						$product_name,
-						$product_url
-					);
-				}
+				$subject = str_replace(array_keys($replacements), array_values($replacements), $raw_subject);
+				$message = str_replace(array_keys($replacements), array_values($replacements), $raw_body);
 
-				if ($subject && $message) {
-					wp_mail($to, $subject, $message);
-				}
+				wp_mail($user->user_email, $subject, $message);
 			}
 		}
 	}

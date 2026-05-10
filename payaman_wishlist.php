@@ -86,7 +86,7 @@ if (! class_exists('Payaman_Wishlist')) {
 		public function define_constants()
 		{
 			global $wpdb;
-			define('PAYAMAN_WISHLIST_VERSION', '1.0.2');
+			define('PAYAMAN_WISHLIST_VERSION', '1.0.0');
 			define('PAYAMAN_WISHLIST_URL', untrailingslashit(plugin_dir_url(__FILE__)));
 			define('PAYAMAN_WISHLIST_LINK', plugin_dir_url(__FILE__));
 			define('PAYAMAN_WISHLIST_PATH', plugin_dir_path(__FILE__));

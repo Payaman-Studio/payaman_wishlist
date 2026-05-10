@@ -134,3 +134,63 @@ input:checked + .payaman_wishlist-slider:before {
 .payaman_wishlist_enabled_row {
   border-bottom: 1px solid #e8e8e8 !important;
 }
+
+/* Sub-navigation styling */
+.payaman-sub-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 25px;
+}
+
+.payaman-sub-link {
+  text-decoration: none;
+  color: #2271b1;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.payaman-sub-link:hover {
+  color: #175d95;
+}
+
+.payaman-sub-link.active {
+  color: #666;
+  font-weight: 600;
+}
+
+/* Content adjustment */
+.payaman-sub-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-divider hr {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 20px 0;
+}
+
+.payaman_wishlist-default-table td {
+  padding: 8px 10px;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  line-height: 1;
+  margin-bottom: 0;
+}
+.payaman_wishlist-default-table td:nth-child(1) {
+  border-left: 1px solid #ccc;
+}
+.payaman_wishlist-default-table tr:first-child td {
+  border-top: 1px solid #ccc;
+  background: #f4f5f6;
+}
