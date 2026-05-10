@@ -1,10 +1,4 @@
 <?php
-/**
- * Payaman_Wishlist Alerts Class
- *
- * @package payaman_wishlist
- * @version 1.0.0
- */
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -16,16 +10,13 @@ if (! class_exists('Payaman_Wishlist_Alerts')) {
 	{
 		public function __construct()
 		{
-			// Hook for stock changes
 			add_action('woocommerce_product_set_stock', array($this, 'handle_stock_change'));
-			
-			// Hook for general product updates (including price)
 			add_action('woocommerce_update_product', array($this, 'handle_product_update'), 10, 2);
+
+			add_action('payaman_wishlist_bg_stock_alert', array($this, 'process_stock_alert'));
+			add_action('payaman_wishlist_bg_price_alert', array($this, 'process_price_alert'));
 		}
 
-		/**
-		 * Handle stock changes.
-		 */
 		public function handle_stock_change($product)
 		{
 			if (payaman_wishlist_setting('enable_stock_alert') !== 'yes') {
@@ -33,40 +24,46 @@ if (! class_exists('Payaman_Wishlist_Alerts')) {
 			}
 
 			if ($product->is_in_stock()) {
-				$this->notify_users($product->get_id(), 'stock');
+				if (function_exists('as_enqueue_async_action')) {
+					as_enqueue_async_action('payaman_wishlist_bg_stock_alert', array('product_id' => $product->get_id()));
+				} else {
+					$this->process_stock_alert($product->get_id());
+				}
 			}
 		}
 
-		/**
-		 * Handle product updates (price drop).
-		 */
 		public function handle_product_update($product_id, $product)
 		{
 			if (payaman_wishlist_setting('enable_price_drop_alert') !== 'yes') {
 				return;
 			}
 
-			// We need to compare current price with previous price.
-			// This is slightly complex without a dedicated price history table.
-			// For now, we'll check if it's on sale and it was NOT on sale before? 
-			// Or just check if the current price is lower than regular price.
-			
 			if ($product->is_on_sale()) {
-				// Simple logic: if it's on sale, notify once.
-				// To avoid spam, we should ideally track if we already sent an alert for this sale.
 				$last_alert = get_post_meta($product_id, '_payaman_wishlist_last_price_alert', true);
 				$current_price = $product->get_price();
 
 				if ($last_alert != $current_price) {
-					$this->notify_users($product_id, 'price');
 					update_post_meta($product_id, '_payaman_wishlist_last_price_alert', $current_price);
+					
+					if (function_exists('as_enqueue_async_action')) {
+						as_enqueue_async_action('payaman_wishlist_bg_price_alert', array('product_id' => $product_id));
+					} else {
+						$this->process_price_alert($product_id);
+					}
 				}
 			}
 		}
 
-		/**
-		 * Notify users via email.
-		 */
+		public function process_stock_alert($product_id)
+		{
+			$this->notify_users($product_id, 'stock');
+		}
+
+		public function process_price_alert($product_id)
+		{
+			$this->notify_users($product_id, 'price');
+		}
+
 		private function notify_users($product_id, $type)
 		{
 			$user_ids = payaman_wishlist_get_users_by_product($product_id);

@@ -4,7 +4,7 @@ if (! defined('ABSPATH')) {
 }
 ?>
 <div class="wrap" id="payaman_wishlist-setting">
-	<h1><?php esc_html_e('Payaman Wishlist Settings', 'payaman_wishlist'); ?></h1>
+	<h1><?php esc_html_e('Payaman Wishlist', 'payaman_wishlist'); ?></h1>
 	<hr />
 
 	<ul class="payaman_wishlist-menu">

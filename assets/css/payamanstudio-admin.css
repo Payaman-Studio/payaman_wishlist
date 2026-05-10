@@ -1,132 +1,136 @@
 /* Admin Menu Tabs */
 .payaman_wishlist-menu {
-    margin: 20px 0 0 0;
-    padding: 0;
-    list-style: none;
-    border-bottom: 1px solid #ccc;
+  margin: 20px 0 0 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid #ccc;
 }
 
 .payaman_wishlist-menu li {
-    display: inline-block;
-    margin: 0;
+  display: inline-block;
+  margin: 0;
 }
 
 .payaman_wishlist-menu li a {
-    display: block;
-    padding: 10px 20px;
-    text-decoration: none;
-    border: 1px solid transparent;
-    border-bottom: none;
-    color: #0073aa;
-    font-weight: 600;
+  display: block;
+  padding: 10px 20px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-bottom: none;
+  color: #0073aa;
+  font-weight: 600;
 }
 
 .payaman_wishlist-menu li a.active {
-    background: #fff;
-    border-color: #ccc;
-    color: #333;
-    position: relative;
-    top: 1px;
+  background: #fff;
+  border-color: #ccc;
+  color: #333;
+  position: relative;
+  top: 1px;
 }
 
 /* Form Sections */
 .form-section {
-    background: #fff;
-    border: 1px solid #ccc;
-    border-top: none;
-    padding: 20px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  padding: 20px;
 }
 
 /* Switch Slider */
 .payaman_wishlist-switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 20px;
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
 }
 
 .payaman_wishlist-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .payaman_wishlist-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 20px;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 20px;
 }
 
 .payaman_wishlist-slider:before {
-    position: absolute;
-    content: "";
-    height: 14px;
-    width: 14px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
 }
 
 input:checked + .payaman_wishlist-slider {
-    background-color: #0073aa;
+  background-color: #0073aa;
 }
 
 input:checked + .payaman_wishlist-slider:before {
-    transform: translateX(20px);
+  transform: translateX(20px);
 }
 
 .image-preview-wrapper img {
-    border: 1px solid #eee;
-    padding: 5px;
-    background: #fff;
+  border: 1px solid #eee;
+  padding: 5px;
+  background: #fff;
 }
 
 /* Dashboard Stats */
 .payaman_wishlist-stat-card {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    border: 1px solid #e5e5e5 !important;
-    transition: transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e5e5 !important;
+  transition: transform 0.2s;
 }
 
 .payaman_wishlist-stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .payaman_wishlist-stat-card h3 {
-    font-size: 14px;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  font-size: 14px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Badges */
 .badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: bold;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: 10px;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 10px;
 }
 
 /* Table Enhancements */
 .wp-list-table img {
-    max-width: 60px;
-    height: auto;
-    border-radius: 4px;
+  max-width: 60px;
+  height: auto;
+  border-radius: 4px;
 }
 
 .wp-list-table td {
-    vertical-align: middle;
+  vertical-align: middle;
+}
+
+.payaman_wishlist_enabled_row {
+  border-bottom: 1px solid #e8e8e8 !important;
 }

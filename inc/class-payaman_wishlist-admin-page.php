@@ -93,7 +93,7 @@ if (! class_exists('Payaman_Wishlist_Admin_Page')) {
 
 				$payaman_wishlist_settings = array(
 					'enabled'                       => isset($post_data['payaman_wishlist_enabled']) ? 'yes' : 'no',
-					'payaman_wishlist_count'            => isset($post_data['payaman_wishlist_count']) ? 'yes' : 'no',
+					'payaman_wishlist_count'        => isset($post_data['payaman_wishlist_count']) ? 'yes' : 'no',
 					'required_login'                => isset($post_data['payaman_wishlist_required_login']) ? 'yes' : 'no',
 					'display_position_button'       => isset($post_data['display_position_button']) ? sanitize_text_field($post_data['display_position_button']) : '',
 					'type_active'                   => isset($post_data['payaman_wishlist_type']) ? sanitize_text_field($post_data['payaman_wishlist_type']) : 'text',
@@ -113,7 +113,7 @@ if (! class_exists('Payaman_Wishlist_Admin_Page')) {
 							'val_off' => isset($post_data['payaman_wishlist_image_val_off']) ? absint($post_data['payaman_wishlist_image_val_off']) : '',
 						),
 					),
-					'messages'                      => array(
+					'messages'                   => array(
 						'add_success_message'    => isset($post_data['add_success_message']) ? sanitize_text_field($post_data['add_success_message']) : '',
 						'remove_success_message' => isset($post_data['remove_success_message']) ? sanitize_text_field($post_data['remove_success_message']) : '',
 						'required_login_message' => isset($post_data['required_login_message']) ? sanitize_text_field($post_data['required_login_message']) : '',
@@ -130,7 +130,7 @@ if (! class_exists('Payaman_Wishlist_Admin_Page')) {
 		 */
 		public function render_payamanstudio_dashboard()
 		{
-			echo '<div class="wrap payamanstudio-admin"><h1>' . esc_html__('Payaman Studio Plugins', 'payaman_wishlist') . '</h1><p>' . esc_html__('Select a plugin from the submenu to manage its settings.', 'payaman_wishlist') . '</p></div>';
+			echo '<div class="wrap payamanstudio-admin"><h1>' . esc_html__('Payaman Studio', 'payaman_wishlist') . '</h1><p>' . esc_html__('Select a plugin from the submenu to manage its settings.', 'payaman_wishlist') . '</p></div>';
 		}
 	}
 
