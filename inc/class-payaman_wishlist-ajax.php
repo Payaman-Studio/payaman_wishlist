@@ -24,6 +24,9 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			add_action('wp_ajax_payaman_wishlist_collection_update', array($this, 'ajax_payaman_wishlist_collection_update'));
 			add_action('wp_ajax_payaman_wishlist_collection_delete', array($this, 'ajax_payaman_wishlist_collection_delete'));
 			add_action('wp_ajax_payaman_wishlist_collection_move_items', array($this, 'ajax_payaman_wishlist_collection_move_items'));
+			add_action('wp_ajax_payaman_wishlist_save_campaign', array($this, 'ajax_save_campaign'));
+			add_action('wp_ajax_payaman_wishlist_send_campaign', array($this, 'ajax_send_campaign'));
+			add_action('wp_ajax_payaman_wishlist_delete_campaign', array($this, 'ajax_delete_campaign'));
 		}
 
 		public function ajax_update_payaman_wishlist_callback()
@@ -252,6 +255,85 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 				'collections' => payaman_wishlist_prepare_collections_response($user_id),
 			));
 		}
+	public function ajax_save_campaign()
+	{
+		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+		}
+
+		$name        = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+		$subject     = isset($_POST['subject']) ? sanitize_text_field(wp_unslash($_POST['subject'])) : '';
+		$body        = isset($_POST['body']) ? wp_kses_post(wp_unslash($_POST['body'])) : '';
+		$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
+
+		if (! $name || ! $subject || ! $body || empty($product_ids)) {
+			wp_send_json_error(array('message' => __('Please fill in all fields.', 'payaman_wishlist')), 400);
+		}
+
+		$campaigns = new Payaman_Wishlist_Campaigns();
+		$id = $campaigns->create(array(
+			'name'        => $name,
+			'subject'     => $subject,
+			'body'        => $body,
+			'product_ids' => $product_ids,
+		));
+
+		if (! $id) {
+			wp_send_json_error(array('message' => __('Failed to save campaign.', 'payaman_wishlist')), 500);
+		}
+
+		wp_send_json_success(array('message' => __('Campaign saved successfully.', 'payaman_wishlist'), 'id' => $id));
+	}
+
+	public function ajax_send_campaign()
+	{
+		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+		}
+
+		$campaign_id = isset($_POST['campaign_id']) ? absint(wp_unslash($_POST['campaign_id'])) : 0;
+		if (! $campaign_id) {
+			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman_wishlist')), 400);
+		}
+
+		$campaigns = new Payaman_Wishlist_Campaigns();
+		$result = $campaigns->send($campaign_id);
+
+		if (is_wp_error($result)) {
+			wp_send_json_error(array('message' => $result->get_error_message()), 400);
+		}
+
+		$message = sprintf(
+			__('Campaign sent! %1$d of %2$d email(s) delivered.', 'payaman_wishlist'),
+			$result['sent'],
+			$result['targeted']
+		);
+
+		wp_send_json_success(array('message' => $message, 'sent' => $result['sent'], 'targeted' => $result['targeted']));
+	}
+
+	public function ajax_delete_campaign()
+	{
+		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+		}
+
+		$campaign_id = isset($_POST['campaign_id']) ? absint(wp_unslash($_POST['campaign_id'])) : 0;
+		if (! $campaign_id) {
+			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman_wishlist')), 400);
+		}
+
+		$campaigns = new Payaman_Wishlist_Campaigns();
+		$campaigns->delete($campaign_id);
+
+		wp_send_json_success(array('message' => __('Campaign deleted.', 'payaman_wishlist')));
+	}
 	}
 
 	new Payaman_Wishlist_AJAX();

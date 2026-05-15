@@ -12,6 +12,7 @@ if (! defined('ABSPATH')) {
 		<li><a href="#tab-general"><?php esc_html_e('General Setting', 'payaman_wishlist'); ?></a></li>
 		<li><a href="#tab-button"><?php esc_html_e('Button Setting', 'payaman_wishlist'); ?></a></li>
 		<li><a href="#tab-message"><?php esc_html_e('Message Setting', 'payaman_wishlist'); ?></a></li>
+		<li><a href="#tab-promotional-email"><?php esc_html_e('Promotional Email', 'payaman_wishlist'); ?></a></li>
 	</ul>
 
 	<form method='post'>
@@ -20,6 +21,7 @@ if (! defined('ABSPATH')) {
 		include_once PAYAMAN_WISHLIST_PATH . 'views/admin/tabs/general.php';
 		include_once PAYAMAN_WISHLIST_PATH . 'views/admin/tabs/button.php';
 		include_once PAYAMAN_WISHLIST_PATH . 'views/admin/tabs/message.php';
+		include_once PAYAMAN_WISHLIST_PATH . 'views/admin/tabs/promotional-email.php';
 		?>
 
 		<p class="submit" id="payaman_wishlist-submit-wrapper" style="display: none;">

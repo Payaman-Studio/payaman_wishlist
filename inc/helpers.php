@@ -68,6 +68,8 @@ function payaman_wishlist_get_table_name($type)
 			return PAYAMAN_WISHLIST_TABLE_COLLECTIONS;
 		case 'items':
 			return PAYAMAN_WISHLIST_TABLE_ITEMS;
+		case 'campaigns':
+			return PAYAMAN_WISHLIST_TABLE_CAMPAIGNS;
 		default:
 			return '';
 	}
@@ -107,8 +109,26 @@ function payaman_wishlist_maybe_install_tables()
 		KEY product_id (product_id)
 	) {$charset_collate};";
 
+	$campaigns_table = payaman_wishlist_get_table_name('campaigns');
+
+	$campaigns_sql = "CREATE TABLE {$campaigns_table} (
+		id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		name VARCHAR(255) NOT NULL,
+		subject VARCHAR(255) NOT NULL,
+		body TEXT NOT NULL,
+		product_ids TEXT NOT NULL,
+		status VARCHAR(20) NOT NULL DEFAULT 'draft',
+		total_targeted INT UNSIGNED NOT NULL DEFAULT 0,
+		total_sent INT UNSIGNED NOT NULL DEFAULT 0,
+		created_by BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+		created_at DATETIME NOT NULL,
+		sent_at DATETIME NULL,
+		PRIMARY KEY  (id)
+	) {$charset_collate};";
+
 	dbDelta($collections_sql);
 	dbDelta($items_sql);
+	dbDelta($campaigns_sql);
 
 	$installed_version = get_option('payaman_wishlist_db_version');
 	if ($installed_version !== PAYAMAN_WISHLIST_DB_VERSION) {

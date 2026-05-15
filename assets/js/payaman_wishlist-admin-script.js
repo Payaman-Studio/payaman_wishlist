@@ -85,7 +85,7 @@ jQuery(function ($) {
     $("#payaman_wishlist-setting " + id).show().animate({ opacity: 1 }, 300);
 
     // Show/hide submit button based on tab
-    if (id === "#tab-dashboard") {
+    if (id === "#tab-dashboard" || id === "#tab-promotional-email") {
       $("#payaman_wishlist-submit-wrapper").hide();
     } else {
       $("#payaman_wishlist-submit-wrapper").show();
