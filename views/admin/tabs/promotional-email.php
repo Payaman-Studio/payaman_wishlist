@@ -84,11 +84,9 @@ $promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
                                     <span class="dashicons dashicons-controls-play"></span>
                                 </button>
                             <?php endif; ?>
-                            <?php if (($c['status'] !== 'sent' && $c['status'] !== 'paused') || ! empty($c['repeat_interval'])) : ?>
-                                <button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php esc_attr_e('Send Now', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($c['id']); ?>">
-                                    <span class="dashicons dashicons-email-alt"></span>
-                                </button>
-                            <?php endif; ?>
+                            <button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php esc_attr_e('Send Now', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($c['id']); ?>">
+                                <span class="dashicons dashicons-email-alt"></span>
+                            </button>
                             <button type="button" class="button payaman-btn-icon payaman-delete-campaign" title="<?php esc_attr_e('Delete', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($c['id']); ?>">
                                 <span class="dashicons dashicons-trash"></span>
                             </button>
@@ -456,9 +454,7 @@ jQuery(function($) {
                     actions += '<button type="button" class="button payaman-btn-icon payaman-resume-campaign" title="<?php echo esc_js(__('Resume', 'payaman_wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-controls-play"></span></button> ';
                 }
 
-                if ((c.status !== 'sent' && c.status !== 'paused') || c.repeat_interval) {
-                    actions += '<button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php echo esc_js(__('Send Now', 'payaman_wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-email-alt"></span></button> ';
-                }
+                actions += '<button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php echo esc_js(__('Send Now', 'payaman_wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-email-alt"></span></button> ';
 
                 actions += '<button type="button" class="button payaman-btn-icon payaman-delete-campaign" title="<?php echo esc_js(__('Delete', 'payaman_wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-trash"></span></button> ';
                 actions += '<span class="campaign-loading" style="display:none;"><span class="spinner is-active"></span></span>';
