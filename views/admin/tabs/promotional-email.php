@@ -231,6 +231,27 @@ $promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
     vertical-align: middle; margin-top: -2px;
 }
 .payaman-btn-icon:hover .dashicons { opacity: 0.8; }
+.payaman-btn-icon[title] { position: relative; }
+.payaman-btn-icon[title]:hover:after {
+    content: attr(title); position: absolute; bottom: calc(100% + 6px);
+    left: 50%; transform: translateX(-50%);
+    background: #1d2327; color: #fff; font-size: 12px;
+    padding: 4px 10px; border-radius: 4px; white-space: nowrap;
+    z-index: 9999; pointer-events: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    animation: payaman-tooltip-in 0.1s ease;
+}
+.payaman-btn-icon[title]:hover:before {
+    content: ''; position: absolute; bottom: calc(100% + 2px);
+    left: 50%; transform: translateX(-50%);
+    border: 4px solid transparent; border-top-color: #1d2327;
+    z-index: 9999; pointer-events: none;
+}
+@keyframes payaman-tooltip-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
 </style>
 
 <script>
