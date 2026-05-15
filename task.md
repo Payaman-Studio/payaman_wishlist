@@ -1,6 +1,6 @@
 # Payaman Wishlist — Fitur yang Masih Kurang
 
-Semua fitur di bawah ini **sudah ada di kompetitor tapi BELUM ada di Payaman Wishlist**.
+Semua fitur di bawah ini **sudah ada di kompetitor tapi BELUM ada di Payaman Wishlist** (kecuali Promotional Email yang sudah diimplementasi).
 
 Perbandingan dengan **YITH WooCommerce Wishlist** (~1jt install) & **TI WooCommerce Wishlist**.
 
@@ -10,7 +10,7 @@ Perbandingan dengan **YITH WooCommerce Wishlist** (~1jt install) & **TI WooComme
 
 | Fitur | Deskripsi | Payaman | YITH | TI |
 |-------|-----------|:-------:|:----:|:--:|
-| **Promotional Email Campaigns** | Panel admin untuk kirim email promosi manual ke semua user yang punya produk tertentu di wishlist-nya (bukan auto alert seperti yg sudah ada) | ❌ | ✅ | ✅ |
+| **Promotional Email Campaigns** | Panel admin untuk kirim email promosi ke user yang punya produk tertentu di wishlist | ✅ | ✅ | ✅ |
 | **Ask for an Estimate** | Tombol "Minta Penawaran" di halaman wishlist, user bisa kirim quote request ke admin | ❌ | ✅ | ✅ |
 | **Quantity Management** | Atur jumlah/qty per item di wishlist (misal pengen 2 buah) | ❌ | ✅ | ✅ |
 | **Add All to Cart** | Tombol "Tambah Semua ke Keranjang" — sekali klik semua item wishlist masuk cart | ❌ | ✅ | ✅ |
@@ -41,9 +41,33 @@ Perbandingan dengan **YITH WooCommerce Wishlist** (~1jt install) & **TI WooComme
 
 ---
 
+## ✅ Promotional Email — Fitur Saat Ini
+
+### ✔️ Sudah Diimplementasi
+- **Multi-product campaign** — Satu campaign bisa target banyak produk
+- **3 mode kirim** — Immediate / Schedule (date + time) / Repeat (daily/weekly/monthly)
+- **Pause & Resume** — Tahan jadwal tanpa hapus, resume otomatis atur ulang waktu jika lewat
+- **Kirim ulang** — Send Now bisa kapan saja walau status sudah `sent`
+- **WP Cron** — Cek schedule tiap 1 menit, kirim otomatis
+- **Timezone handling** — Konversi browser → UTC → WP timezone
+- **Tambah/Edit via modal** — Form popup untuk create & edit campaign
+- **Table dengan refresh AJAX** — Gak perlu reload halaman
+- **UI modern** — Icon buttons (Dashicons) + tooltip hover
+
+### 🔜 Potensi Pengembangan Selanjutnya
+- **Email preview** — Lihat hasil email dengan placeholder sebelum kirim
+- **Test send** — Kirim test ke email admin dulu sebelum broadcast
+- **Send log / history** — Catat riwayat pengiriman (kapan, ke berapa user, hasil)
+- **Duplicate campaign** — Gandakan campaign yang sudah ada sebagai template
+- **Queue system** — Kirim bertahap untuk ribuan user biar gak timeout
+- **HTML email template** — Support HTML dengan branding
+- **Bulk actions** — Select multi campaign → pause/resume/delete sekali klik
+
+---
+
 ## 💡 Rekomendasi Prioritas Pengembangan
 
-1. **Promotional Email Campaigns** — Panel admin untuk kirim email promosi manual
+1. ~~**Promotional Email Campaigns**~~ ✅ Selesai
 2. **Ask for an Estimate** — Fitur lead generation, banyak kompetitor punya
 3. **Quantity + Add All to Cart** — Mempermudah konversi wishlist ke pembelian
 4. **Social Sharing lebih luas** — Tambah Facebook, Twitter, Pinterest, Email
