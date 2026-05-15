@@ -111,22 +111,23 @@ $promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
         </div>
         <div class="payaman-modal-body">
             <input type="hidden" id="edit_campaign_id" value="">
+            <div id="payaman_modal_status" class="notice" style="display:none;margin-bottom:15px;"></div>
 
             <table class="form-table">
                 <tr>
-                    <th scope="row"><label for="campaign_name"><?php esc_html_e('Campaign Name', 'payaman_wishlist'); ?></label></th>
+                    <th scope="row"><label for="campaign_name"><?php esc_html_e('Campaign Name', 'payaman_wishlist'); ?> <span class="req">*</span></label></th>
                     <td>
-                        <input type="text" id="campaign_name" class="large-text" placeholder="e.g. Summer Sale 2026">
+                        <input type="text" id="campaign_name" class="large-text" placeholder="e.g. Summer Sale 2026" required>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="campaign_products"><?php esc_html_e('Products', 'payaman_wishlist'); ?></label></th>
+                    <th scope="row"><label for="campaign_products"><?php esc_html_e('Products', 'payaman_wishlist'); ?> <span class="req">*</span></label></th>
                     <td>
                         <select id="campaign_products" class="wc-product-search" multiple="multiple" style="width: 400px;" data-placeholder="<?php esc_attr_e('Search products...', 'payaman_wishlist'); ?>" data-action="woocommerce_json_search_products_and_variations"></select>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><?php esc_html_e('Send Type', 'payaman_wishlist'); ?></th>
+                    <th scope="row"><?php esc_html_e('Send Type', 'payaman_wishlist'); ?> <span class="req">*</span></th>
                     <td>
                         <label style="margin-right: 20px;">
                             <input type="radio" name="campaign_send_type" value="immediate" checked>
@@ -156,15 +157,15 @@ $promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="campaign_subject"><?php esc_html_e('Email Subject', 'payaman_wishlist'); ?></label></th>
+                    <th scope="row"><label for="campaign_subject"><?php esc_html_e('Email Subject', 'payaman_wishlist'); ?> <span class="req">*</span></label></th>
                     <td>
-                        <input type="text" id="campaign_subject" class="large-text" value="<?php esc_attr_e('Special offer on your wishlisted items, {user_name}!', 'payaman_wishlist'); ?>">
+                        <input type="text" id="campaign_subject" class="large-text" value="<?php esc_attr_e('Special offer on your wishlisted items, {user_name}!', 'payaman_wishlist'); ?>" required>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="campaign_body"><?php esc_html_e('Email Body', 'payaman_wishlist'); ?></label></th>
+                    <th scope="row"><label for="campaign_body"><?php esc_html_e('Email Body', 'payaman_wishlist'); ?> <span class="req">*</span></label></th>
                     <td>
-                        <textarea id="campaign_body" rows="10" class="large-text"><?php
+                        <textarea id="campaign_body" rows="10" class="large-text" required><?php
                             echo esc_textarea(__("Hi {user_name},\n\nGreat news! We have special offers on {count} product(s) from your wishlist:\n\n{products_list}\n\nDon't miss out — check them out now!\n\nBest regards,\n{site_name}", 'payaman_wishlist'));
                         ?></textarea>
                         <p class="description">
@@ -176,13 +177,38 @@ $promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
             </table>
         </div>
         <div class="payaman-modal-footer">
-            <button type="button" class="button" id="payaman_modal_cancel"><?php esc_html_e('Cancel', 'payaman_wishlist'); ?></button>
-            <button type="button" class="button button-primary" id="payaman_modal_save">
-                <?php esc_html_e('Save Campaign', 'payaman_wishlist'); ?>
-            </button>
-            <span id="payaman_campaign_loading" style="display: none; margin-left: 10px; vertical-align: middle;">
-                <span class="spinner is-active"></span>
-            </span>
+            <div style="display:flex;gap:6px;">
+                <button type="button" class="button" id="payaman_modal_preview">
+                    <span class="dashicons dashicons-visibility" style="font-size:14px;width:14px;height:14px;vertical-align:middle;"></span>
+                    <?php esc_html_e('Preview', 'payaman_wishlist'); ?>
+                </button>
+                <button type="button" class="button" id="payaman_modal_test">
+                    <span class="dashicons dashicons-email" style="font-size:14px;width:14px;height:14px;vertical-align:middle;"></span>
+                    <?php esc_html_e('Send Test', 'payaman_wishlist'); ?>
+                </button>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <span id="payaman_campaign_loading" style="display:none;"><span class="spinner is-active"></span></span>
+                <button type="button" class="button" id="payaman_modal_cancel"><?php esc_html_e('Cancel', 'payaman_wishlist'); ?></button>
+                <button type="button" class="button button-primary" id="payaman_modal_save">
+                    <?php esc_html_e('Save Campaign', 'payaman_wishlist'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="payaman_preview_modal" class="payaman-modal-overlay" style="display:none;">
+    <div class="payaman-modal payaman-modal-wide">
+        <div class="payaman-modal-header">
+            <h3 id="payaman_preview_title"><?php esc_html_e('Email Preview', 'payaman_wishlist'); ?></h3>
+            <button type="button" class="preview-close">&times;</button>
+        </div>
+        <div class="payaman-modal-body" style="padding:0;">
+            <iframe id="payaman_preview_iframe" style="width:100%;height:60vh;border:none;"></iframe>
+        </div>
+        <div class="payaman-modal-footer">
+            <button type="button" class="button preview-close"><?php esc_html_e('Close', 'payaman_wishlist'); ?></button>
         </div>
     </div>
 </div>
@@ -199,6 +225,7 @@ $promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
     display: flex; flex-direction: column;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
+.payaman-modal-wide { max-width: 800px; }
 .payaman-modal-header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 15px 20px; border-bottom: 1px solid #ddd;
@@ -231,6 +258,7 @@ $promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
     vertical-align: middle; margin-top: -2px;
 }
 .payaman-btn-icon:hover .dashicons { opacity: 0.8; }
+.req { color: #d63638; font-weight: bold; }
 .payaman-btn-icon[title] { position: relative; }
 .payaman-btn-icon[title]:hover:after {
     content: attr(title); position: absolute; bottom: calc(100% + 6px);
@@ -347,6 +375,12 @@ jQuery(function($) {
         return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
     }
 
+    function showModalStatus(msg, type) {
+        var $s = $('#payaman_modal_status');
+        $s.removeClass('notice-success notice-error').addClass('notice-' + type)
+            .html('<p>' + msg + '</p>').show();
+    }
+
     $('#payaman_modal_save').on('click', function() {
         var editId = $('#edit_campaign_id').val();
         var name = $('#campaign_name').val();
@@ -358,13 +392,15 @@ jQuery(function($) {
         var repeat = $('#campaign_repeat').val() || '';
         var tzOffset = getTzOffset();
 
+        $('#payaman_modal_status').hide();
+
         if (!name || !products || products.length === 0 || !subject || !body) {
-            showStatus('<?php echo esc_js(__('Please fill in all fields.', 'payaman_wishlist')); ?>', 'error');
+            showModalStatus('<?php echo esc_js(__('Please fill in all fields.', 'payaman_wishlist')); ?>', 'error');
             return;
         }
 
         if (sendType === 'scheduled' && !scheduledAt) {
-            showStatus('<?php echo esc_js(__('Please select a schedule date and time.', 'payaman_wishlist')); ?>', 'error');
+            showModalStatus('<?php echo esc_js(__('Please select a schedule date and time.', 'payaman_wishlist')); ?>', 'error');
             return;
         }
 
@@ -397,13 +433,83 @@ jQuery(function($) {
                 showStatus(res.data.message, 'success');
                 refreshTable();
             } else {
-                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error saving campaign.', 'payaman_wishlist')); ?>', 'error');
+                showModalStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error saving campaign.', 'payaman_wishlist')); ?>', 'error');
+                $btn.prop('disabled', false);
+                $('#payaman_campaign_loading').hide();
             }
         }).fail(function() {
             $('#payaman_campaign_loading').hide();
             $btn.prop('disabled', false);
-            showStatus('<?php echo esc_js(__('Request failed.', 'payaman_wishlist')); ?>', 'error');
+            showModalStatus('<?php echo esc_js(__('Request failed.', 'payaman_wishlist')); ?>', 'error');
         });
+    });
+
+    function getFormPreviewData() {
+        return {
+            subject: $('#campaign_subject').val(),
+            body: $('#campaign_body').val(),
+            product_ids: $('#campaign_products').val() || [],
+            nonce: promoNonce
+        };
+    }
+
+    function openPreviewModal(html, subject) {
+        $('#payaman_preview_title').text('Email Preview' + (subject ? ': ' + subject : ''));
+        var iframe = document.getElementById('payaman_preview_iframe');
+        iframe.src = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+        $('#payaman_preview_modal').fadeIn(150);
+    }
+
+    $('#payaman_modal_preview').on('click', function() {
+        var data = getFormPreviewData();
+        if (!data.subject || !data.body || !data.product_ids.length) {
+            showModalStatus('<?php echo esc_js(__('Please fill in all fields first.', 'payaman_wishlist')); ?>', 'error');
+            return;
+        }
+        data.action = 'payaman_wishlist_preview_campaign';
+        var $btn = $(this).prop('disabled', true);
+        $('#payaman_campaign_loading').show();
+
+        $.post(ajaxurl, data, function(res) {
+            $('#payaman_campaign_loading').hide();
+            $btn.prop('disabled', false);
+            if (res.success) {
+                openPreviewModal(res.data.html, res.data.subject);
+            } else {
+                showModalStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error generating preview.', 'payaman_wishlist')); ?>', 'error');
+            }
+        }).fail(function() {
+            $('#payaman_campaign_loading').hide();
+            $btn.prop('disabled', false);
+        });
+    });
+
+    $('#payaman_modal_test').on('click', function() {
+        var data = getFormPreviewData();
+        if (!data.subject || !data.body || !data.product_ids.length) {
+            showModalStatus('<?php echo esc_js(__('Please fill in all fields first.', 'payaman_wishlist')); ?>', 'error');
+            return;
+        }
+        data.action = 'payaman_wishlist_test_campaign';
+        var $btn = $(this).prop('disabled', true);
+        $('#payaman_campaign_loading').show();
+
+        $.post(ajaxurl, data, function(res) {
+            $('#payaman_campaign_loading').hide();
+            $btn.prop('disabled', false);
+            if (res.success) {
+                showModalStatus(res.data.message, 'success');
+            } else {
+                showModalStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error sending test.', 'payaman_wishlist')); ?>', 'error');
+            }
+        }).fail(function() {
+            $('#payaman_campaign_loading').hide();
+            $btn.prop('disabled', false);
+        });
+    });
+
+    $('.preview-close').on('click', function() {
+        $('#payaman_preview_modal').fadeOut(100);
     });
 
     $(document).on('click', '.payaman-send-campaign', function() {

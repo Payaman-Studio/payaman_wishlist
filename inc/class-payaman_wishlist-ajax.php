@@ -33,6 +33,8 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			add_action('wp_ajax_payaman_wishlist_get_campaigns', array($this, 'ajax_get_campaigns'));
 			add_action('wp_ajax_payaman_wishlist_pause_campaign', array($this, 'ajax_pause_campaign'));
 			add_action('wp_ajax_payaman_wishlist_resume_campaign', array($this, 'ajax_resume_campaign'));
+			add_action('wp_ajax_payaman_wishlist_preview_campaign', array($this, 'ajax_preview_campaign'));
+			add_action('wp_ajax_payaman_wishlist_test_campaign', array($this, 'ajax_test_campaign'));
 		}
 
 		public function ajax_update_payaman_wishlist_callback()
@@ -512,6 +514,106 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		$message = __('Campaign resumed. It will be processed at the next scheduled time.', 'payaman_wishlist');
 
 		wp_send_json_success(array('message' => $message));
+	}
+
+	public function ajax_preview_campaign()
+	{
+		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+		}
+
+		$subject     = isset($_POST['subject']) ? sanitize_text_field(wp_unslash($_POST['subject'])) : '';
+		$body        = isset($_POST['body']) ? wp_kses_post(wp_unslash($_POST['body'])) : '';
+		$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
+
+		$sample_products = array();
+		if (! empty($product_ids)) {
+			foreach ($product_ids as $pid) {
+				$p = wc_get_product(absint($pid));
+				if ($p) {
+					$sample_products[] = $p;
+				}
+				if (count($sample_products) >= 3) break;
+			}
+		}
+
+		$products_list = '';
+		$count = count($sample_products);
+		foreach ($sample_products as $i => $p) {
+			$products_list .= ($i + 1) . '. ' . $p->get_name() . ' - ' . get_permalink($p->get_id()) . "\n";
+		}
+
+		$current_user = wp_get_current_user();
+		$replacements = array(
+			'{user_name}'     => $current_user ? $current_user->display_name : 'John Doe',
+			'{site_name}'     => get_bloginfo('name'),
+			'{count}'         => $count ?: 3,
+			'{products_list}' => trim($products_list ?: "1. Sample Product - " . home_url()),
+		);
+
+		$rendered = Payaman_Wishlist_Campaigns::render_html_email($subject, $body, $replacements);
+
+		wp_send_json_success(array(
+			'subject' => $rendered['subject'],
+			'html'    => $rendered['html'],
+		));
+	}
+
+	public function ajax_test_campaign()
+	{
+		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+		}
+
+		$subject     = isset($_POST['subject']) ? sanitize_text_field(wp_unslash($_POST['subject'])) : '';
+		$body        = isset($_POST['body']) ? wp_kses_post(wp_unslash($_POST['body'])) : '';
+		$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
+
+		if (! $subject || ! $body || empty($product_ids)) {
+			wp_send_json_error(array('message' => __('Please fill in all fields first.', 'payaman_wishlist')), 400);
+		}
+
+		$sample_products = array();
+		if (! empty($product_ids)) {
+			foreach ($product_ids as $pid) {
+				$p = wc_get_product(absint($pid));
+				if ($p) {
+					$sample_products[] = $p;
+				}
+				if (count($sample_products) >= 3) break;
+			}
+		}
+
+		$products_list = '';
+		$count = count($sample_products);
+		foreach ($sample_products as $i => $p) {
+			$products_list .= ($i + 1) . '. ' . $p->get_name() . ' - ' . get_permalink($p->get_id()) . "\n";
+		}
+
+		$current_user = wp_get_current_user();
+		$replacements = array(
+			'{user_name}'     => $current_user ? $current_user->display_name : 'John Doe',
+			'{site_name}'     => get_bloginfo('name'),
+			'{count}'         => $count ?: 3,
+			'{products_list}' => trim($products_list ?: "1. Sample Product - " . home_url()),
+		);
+
+		$mailed = Payaman_Wishlist_Campaigns::send_email(
+			$current_user->user_email,
+			$subject,
+			$body,
+			$replacements
+		);
+
+		if ($mailed) {
+			wp_send_json_success(array('message' => __('Test email sent to your email address.', 'payaman_wishlist')));
+		} else {
+			wp_send_json_error(array('message' => __('Failed to send test email.', 'payaman_wishlist')), 500);
+		}
 	}
 
 	public function ajax_process_due()

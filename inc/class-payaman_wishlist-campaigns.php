@@ -137,6 +137,76 @@ if (! class_exists('Payaman_Wishlist_Campaigns')) {
 			return $rows;
 		}
 
+		public static function get_html_template()
+		{
+			return '<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;">
+<tr><td align="center" style="padding:30px 15px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;">
+<tr><td align="center" style="padding:0 0 20px 0;font-size:22px;font-weight:bold;color:#1d2327;">{site_name}</td></tr>
+<tr><td style="background:#fff;padding:30px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.08);font-size:15px;line-height:1.6;color:#333;">
+{email_body}
+</td></tr>
+<tr><td align="center" style="padding:20px 0 0 0;font-size:12px;color:#999;">
+<p style="margin:0;">You received this because you have wishlisted items on {site_name}.</p>
+<p style="margin:5px 0 0 0;">&copy; {site_name}</p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>';
+		}
+
+		public static function render_html_email($subject, $body, $replacements = array())
+		{
+			$body_html = nl2br($body);
+
+			$products_list = isset($replacements['{products_list}']) ? $replacements['{products_list}'] : '';
+
+			if ($products_list && strpos($body_html, '{products_list}') !== false) {
+				$lines = explode("\n", trim($products_list));
+				$html_list = '<ol style="margin:10px 0;padding:0 0 0 20px;">';
+				foreach ($lines as $line) {
+					$line = trim($line);
+					if (! $line) continue;
+					if (preg_match('/^\d+\.\s(.+)/', $line, $m)) {
+						$html_list .= '<li style="margin-bottom:4px;">' . esc_html($m[1]) . '</li>';
+					} else {
+						$html_list .= '<li style="margin-bottom:4px;">' . esc_html($line) . '</li>';
+					}
+				}
+				$html_list .= '</ol>';
+				$replacements['{products_list}'] = $html_list;
+			}
+
+			$body_html = str_replace(array_keys($replacements), array_values($replacements), $body_html);
+
+			$template = self::get_html_template();
+			$template_replacements = array(
+				'{site_name}'  => get_bloginfo('name'),
+				'{email_body}' => $body_html,
+			);
+			$full_html = str_replace(array_keys($template_replacements), array_values($template_replacements), $template);
+
+			$subject_rendered = str_replace(array_keys($replacements), array_values($replacements), $subject);
+
+			return array(
+				'subject' => $subject_rendered,
+				'html'    => $full_html,
+			);
+		}
+
+		public static function send_email($to, $subject, $body, $replacements = array())
+		{
+			$rendered = self::render_html_email($subject, $body, $replacements);
+			$headers = array('Content-Type: text/html; charset=UTF-8');
+			return wp_mail($to, $rendered['subject'], $rendered['html'], $headers);
+		}
+
 		public function delete($id)
 		{
 			global $wpdb;
@@ -197,10 +267,7 @@ if (! class_exists('Payaman_Wishlist_Campaigns')) {
 					'{products_list}' => trim($products_list),
 				);
 
-				$email_subject = str_replace(array_keys($replacements), array_values($replacements), $campaign['subject']);
-				$email_body    = str_replace(array_keys($replacements), array_values($replacements), $campaign['body']);
-
-				$mailed = wp_mail($user->user_email, $email_subject, $email_body);
+				$mailed = self::send_email($user->user_email, $campaign['subject'], $campaign['body'], $replacements);
 				if ($mailed) {
 					$sent_count++;
 				}
