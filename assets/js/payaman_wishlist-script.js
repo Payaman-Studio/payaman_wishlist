@@ -204,6 +204,18 @@ jQuery(function ($) {
     }
     collectionsData = newCollections;
     renderCollectionOptions(pendingCollectionId || defaultCollectionId);
+    collectionsData.forEach(function (collection) {
+      var $tabLink = $(
+        '.payaman_wishlist-collection-link[data-collection-id="' +
+          collection.id +
+          '"]',
+      );
+      if ($tabLink.length) {
+        $tabLink
+          .find(".payaman_wishlist-tab-count")
+          .text("(" + collection.count + ")");
+      }
+    });
   }
 
   function handleWishlistClick(productId, collectionId, action, variationId) {
