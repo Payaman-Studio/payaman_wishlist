@@ -338,12 +338,13 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
 			$product_ids = array_values(array_unique(array_filter(array_map('absint', $product_ids))));
 			$target_collection_id = isset($_POST['target_collection_id']) ? sanitize_text_field(wp_unslash($_POST['target_collection_id'])) : '';
+			$source_collection_id = isset($_POST['source_collection_id']) ? sanitize_text_field(wp_unslash($_POST['source_collection_id'])) : '';
 
 			if (empty($product_ids)) {
 				wp_send_json_error(array('message' => __('Invalid selection.', 'payaman_wishlist')), 400);
 			}
 
-			$result = payaman_wishlist_move_items_to_collection($user_id, $product_ids, $target_collection_id);
+			$result = payaman_wishlist_move_items_between_collections($user_id, $product_ids, $target_collection_id, $source_collection_id);
 
 			if (is_wp_error($result)) {
 				wp_send_json_error(array('message' => $result->get_error_message()), 400);

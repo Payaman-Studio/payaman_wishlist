@@ -212,8 +212,8 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 				'enable_add_success_message'    => payaman_wishlist_setting('enable_add_success_message', 'no'),
 				'enable_remove_success_message' => payaman_wishlist_setting('enable_remove_success_message', 'no'),
 				'remove_after_add_to_cart'      => payaman_wishlist_setting('remove_after_add_to_cart', 'no'),
-				'add_success_message'           => payaman_wishlist_setting('add_success'),
-				'remove_success_message'        => payaman_wishlist_setting('remove_success'),
+				'add_success_message'            => payaman_wishlist_setting('add_success'),
+				'remove_success_message'         => payaman_wishlist_setting('remove_success'),
 				'required_login_message'        => payaman_wishlist_setting('required_login_message', __('You must be logged in.', 'payaman_wishlist')),
 				'error_message'                 => __('Unable to update wishlist. Please try again.', 'payaman_wishlist'),
 				'wishlist_page_url'             => payaman_wishlist_get_wishlist_page_url(),
@@ -239,6 +239,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 					'add_all_to_cart'         => __('Add All to Cart', 'payaman_wishlist'),
 					'adding_to_cart'          => __('Adding…', 'payaman_wishlist'),
 					'view_cart'               => __('View Cart', 'payaman_wishlist'),
+					'move_success'            => __('Items moved successfully.', 'payaman_wishlist'),
 					'no_products_in_wishlist' => __('No products in this collection.', 'payaman_wishlist'),
 				),
 			);

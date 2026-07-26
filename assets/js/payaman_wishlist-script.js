@@ -661,29 +661,20 @@ jQuery(function ($) {
         }
 
         updateCollectionsData(response.data.collections);
-        $selected
-          .prop("checked", false)
-          .closest("tr")
-          .each(function () {
-            var targetName = "";
-            for (var i = 0; i < collectionsData.length; i += 1) {
-              if (collectionsData[i].id === target) {
-                targetName = collectionsData[i].name;
-                break;
-              }
-            }
-            $(this)
-              .attr("data-collection-id", target)
-              .find(".payaman_wishlist-table__collection")
-              .text(targetName);
-          });
+        $selected.prop("checked", false).closest("tr").fadeOut(300, function () {
+          $(this).remove();
+          if ($wrapper.find("tbody tr").length === 0) {
+            var emptyMsg = $wrapper.data("empty-message");
+            $wrapper.find(".payaman_wishlist-table-responsive").replaceWith(
+              '<p class="payaman_wishlist-empty-message">' + emptyMsg + "</p>",
+            );
+          }
+        });
         updateBulkControls($wrapper);
         $wrapper
           .find(".payaman_wishlist-bulk-move-button")
           .prop("disabled", true);
-        if (payaman_wishlist_object.enable_add_success_message === "yes") {
-          openMessageModal(payaman_wishlist_object.add_success_message);
-        }
+        showToast(payaman_wishlist_object.i18n.move_success);
       },
       error: function () {
         openMessageModal(payaman_wishlist_object.error_message);
