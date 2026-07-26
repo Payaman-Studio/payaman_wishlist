@@ -242,7 +242,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 					'move_success'             => __('Items moved successfully.', 'payaman_wishlist'),
 					'move_to_collection'      => __('Move to collection:', 'payaman_wishlist'),
 					'move'                    => __('Move', 'payaman_wishlist'),
-					'no_other_collections'    => __('No other collections available.', 'payaman_wishlist'),
+					'current_collection'      => __('current', 'payaman_wishlist'),
 					'no_products_in_wishlist' => __('No products in this collection.', 'payaman_wishlist'),
 				),
 			);
@@ -643,7 +643,6 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 								<th><?php esc_html_e('Product', 'payaman_wishlist'); ?></th>
 								<th><?php esc_html_e('Price', 'payaman_wishlist'); ?></th>
 								<th><?php esc_html_e('Stock Status', 'payaman_wishlist'); ?></th>
-								<th><?php esc_html_e('Collection', 'payaman_wishlist'); ?></th>
 								<th class="payaman_wishlist-col-actions"><?php esc_html_e('Actions', 'payaman_wishlist'); ?></th>
 							</tr>
 						</thead>
@@ -657,17 +656,8 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 								}
 								$product_id = absint($product->get_id());
 								$current_collection_for_product = '';
-								$collection_name = '';
 								if (is_user_logged_in()) {
 									$current_collection_for_product = payaman_wishlist_get_collection_for_product(get_current_user_id(), $product_id);
-									if ($current_collection_for_product && ! empty($collections)) {
-										foreach ($collections as $collection) {
-											if ($collection['id'] === $current_collection_for_product) {
-												$collection_name = $collection['name'];
-												break;
-											}
-										}
-									}
 								}
 							?>
 								<tr data-product-id="<?php echo esc_attr($product_id); ?>" data-collection-id="<?php echo esc_attr($current_collection_for_product); ?>">
@@ -685,9 +675,6 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 									</td>
 									<td class="payaman_wishlist-table__stock" data-title="<?php esc_attr_e('Stock Status', 'payaman_wishlist'); ?>">
 										<?php echo $product->is_in_stock() ? '<span class="payaman_wishlist-in-stock">' . esc_html__('In Stock', 'payaman_wishlist') . '</span>' : '<span class="payaman_wishlist-out-of-stock">' . esc_html__('Out of Stock', 'payaman_wishlist') . '</span>'; ?>
-									</td>
-									<td class="payaman_wishlist-table__collection" data-title="<?php esc_attr_e('Collection', 'payaman_wishlist'); ?>">
-										<?php echo esc_html($collection_name); ?>
 									</td>
 									<td class="payaman_wishlist-table__actions" data-title="<?php esc_attr_e('Actions', 'payaman_wishlist'); ?>">
 										<?php if ($product->is_type('simple')) : ?>

@@ -67,11 +67,17 @@
   margin: 0;
 }
 .payaman_wishlist-col-actions {
-  width: 18%;
-  white-space: nowrap;
+  width: 250px;
 }
-.payaman_wishlist-col-actions > * + * {
-  margin-left: 8px;
+.payaman_wishlist-table__actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
+}
+.payaman_wishlist-table__actions > * {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* ── Bulk toolbar ── */

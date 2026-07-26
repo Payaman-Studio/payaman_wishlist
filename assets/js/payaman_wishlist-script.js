@@ -646,23 +646,20 @@ jQuery(function ($) {
     var options = "";
     for (var i = 0; i < collectionsData.length; i++) {
       var col = collectionsData[i];
-      if (col.id === currentId) continue;
+      var isCurrent = col.id === currentId;
       options +=
         '<label style="display:block;padding:6px 0;cursor:pointer;">' +
         '<input type="radio" name="payaman_wishlist_move_target" value="' +
         col.id +
         '"' +
-        (options === "" ? " checked" : "") +
+        (isCurrent ? " checked" : "") +
         " /> " +
         col.name +
         " (" +
         col.count +
         ")" +
+        (isCurrent ? " <em>(" + payaman_wishlist_object.i18n.current_collection + ")</em>" : "") +
         "</label>";
-    }
-    if (!options) {
-      showToast(payaman_wishlist_object.i18n.no_other_collections || "No other collections available.");
-      return;
     }
 
     modal
