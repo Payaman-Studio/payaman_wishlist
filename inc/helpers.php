@@ -382,7 +382,13 @@ function payaman_wishlist_get_wishlist_page_url()
 {
 	$page = get_page_by_path('wishlist-list');
 	if (! $page) {
-		$page = get_page_by_title('Wishlist');
+		$title_query = new WP_Query(array(
+			'post_type' => 'page',
+			'title' => 'Wishlist',
+			'posts_per_page' => 1,
+			'post_status' => 'any',
+		));
+		$page = $title_query->have_posts() ? $title_query->posts[0] : null;
 	}
 
 	if ($page) {

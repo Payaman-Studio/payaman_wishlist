@@ -134,7 +134,13 @@ if (! class_exists('Payaman_Wishlist')) {
 		 */
 		public function payaman_wishlist_install()
 		{
-			if (get_page_by_title('Wishlist', ARRAY_A, 'page') == null) {
+			$existing = new WP_Query(array(
+				'post_type' => 'page',
+				'title' => 'Wishlist',
+				'posts_per_page' => 1,
+				'post_status' => 'any',
+			));
+			if (! $existing->have_posts()) {
 				payaman_wishlist_create_page();
 			}
 			if (! get_option('payaman_wishlist_settings')) {
