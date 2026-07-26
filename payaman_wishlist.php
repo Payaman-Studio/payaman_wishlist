@@ -99,12 +99,15 @@ if (! class_exists('Payaman_Wishlist')) {
 			define('PAYAMAN_WISHLIST_LINK', plugin_dir_url(__FILE__));
 			define('PAYAMAN_WISHLIST_PATH', plugin_dir_path(__FILE__));
 			define('PAYAMAN_WISHLIST_REL_PATH', dirname(plugin_basename(__FILE__)) . '/');
-			define('PAYAMAN_WISHLIST_DB_VERSION', '2.3.0');
+			define('PAYAMAN_WISHLIST_DB_VERSION', '2.4.0');
 			define('PAYAMAN_WISHLIST_TABLE_COLLECTIONS', $wpdb->prefix . 'payaman_wishlist_collections');
 			define('PAYAMAN_WISHLIST_TABLE_ITEMS', $wpdb->prefix . 'payaman_wishlist_collection_items');
 			define('PAYAMAN_WISHLIST_TABLE_CAMPAIGNS', $wpdb->prefix . 'payaman_wishlist_campaigns');
 			if (! defined('PAYAMAN_WISHLIST_COLLECTION_LIMIT')) {
 				define('PAYAMAN_WISHLIST_COLLECTION_LIMIT', 20);
+			}
+			if (! defined('PAYAMAN_WISHLIST_ITEMS_PER_PAGE')) {
+				define('PAYAMAN_WISHLIST_ITEMS_PER_PAGE', 20);
 			}
 		}
 

@@ -54,6 +54,16 @@ if (! defined('ABSPATH')) {
 			</td>
 		</tr>
 		<tr class="payaman_wishlist_enabled_row">
+			<th scope="row"><label for="payaman_wishlist_use_legacy_meta"><?php esc_html_e('Legacy Post Meta', 'payaman_wishlist'); ?></label></th>
+			<td>
+				<label class="payaman_wishlist-switch">
+					<input type="checkbox" name="payaman_wishlist_use_legacy_meta" id="payaman_wishlist_use_legacy_meta" value="yes" <?php checked(payaman_wishlist_setting('use_legacy_meta'), 'yes'); ?> />
+					<span class="payaman_wishlist-slider round"></span>
+				</label>
+				<p class="description"><?php esc_html_e('Enable backward compatibility with legacy post meta storage. Only enable if you have custom code that reads payaman_wishlist post meta directly.', 'payaman_wishlist'); ?></p>
+			</td>
+		</tr>
+		<tr class="payaman_wishlist_enabled_row">
 			<th scope="row"><?php esc_html_e('Marketing Alerts', 'payaman_wishlist'); ?></th>
 			<td>
 				<label>

@@ -1,7 +1,7 @@
 /* global Cookies, payaman_wishlist_object */
 jQuery(function ($) {
   function showAlert(message) {
-    window.alert(message || payaman_wishlist_object.i18n.generic_error);
+    showModalAlert(message || payaman_wishlist_object.i18n.generic_error);
   }
   function showToast(message) {
     var $toast = $("#payaman_wishlist-toast");
@@ -64,6 +64,8 @@ jQuery(function ($) {
     return baseText;
   }
 
+  var confirmCallback = null;
+
   function ensureModal() {
     if (!$modal.length) {
       $modal = $("#payaman_wishlist-modal");
@@ -89,6 +91,51 @@ jQuery(function ($) {
       pendingProductId = null;
       pendingAction = null;
     }
+    confirmCallback = null;
+  }
+
+  function showModalAlert(message) {
+    var modal = ensureModal();
+    if (!modal.length) {
+      showAlert(message);
+      return;
+    }
+    modal
+      .find(".payaman_wishlist-modal__view--message .payaman_wishlist-modal__message")
+      .text(message || "");
+    modal
+      .find(".payaman_wishlist-modal__view--message .payaman_wishlist-modal__actions")
+      .html(
+        '<button type="button" class="button payaman_wishlist-modal__close" data-payaman_wishlist-close>' +
+          payaman_wishlist_object.i18n.ok +
+          "</button>",
+      );
+    modal.removeClass("is-manage is-confirm").addClass("is-message");
+    showModalView("message");
+  }
+
+  function showModalConfirm(message, onConfirm) {
+    var modal = ensureModal();
+    if (!modal.length) {
+      if (window.confirm(message) && onConfirm) onConfirm();
+      return;
+    }
+    confirmCallback = onConfirm || null;
+    modal
+      .find(".payaman_wishlist-modal__view--confirm .payaman_wishlist-modal__message")
+      .text(message || "");
+    modal
+      .find(".payaman_wishlist-modal__view--confirm .payaman_wishlist-modal__actions")
+      .html(
+        '<button type="button" class="button payaman_wishlist-modal__confirm-yes">' +
+          payaman_wishlist_object.i18n.yes +
+          '</button> ' +
+          '<button type="button" class="button payaman_wishlist-modal__close" data-payaman_wishlist-close>' +
+          payaman_wishlist_object.i18n.cancel +
+          "</button>",
+      );
+    modal.removeClass("is-manage is-message").addClass("is-confirm");
+    showModalView("confirm");
   }
 
   function openMessageModal(message) {
@@ -98,10 +145,21 @@ jQuery(function ($) {
       return;
     }
     modal
-      .find(".payaman_wishlist-modal__message")
-      .text(message || "")
-      .show();
-    modal.removeClass("is-manage").addClass("is-message");
+      .find(".payaman_wishlist-modal__view--message .payaman_wishlist-modal__message")
+      .text(message || "");
+    modal
+      .find(".payaman_wishlist-modal__view--message .payaman_wishlist-modal__actions")
+      .html(
+      '<a href="' +
+        payaman_wishlist_object.wishlist_page_url +
+        '" class="button payaman_wishlist-modal__view-link">' +
+        payaman_wishlist_object.i18n.view_wishlist +
+        '</a> ' +
+        '<button type="button" class="button payaman_wishlist-modal__close" data-payaman_wishlist-close>' +
+        payaman_wishlist_object.i18n.close +
+        "</button>",
+    );
+    modal.removeClass("is-manage is-confirm").addClass("is-message");
     showModalView("message");
   }
 
@@ -362,7 +420,7 @@ jQuery(function ($) {
       data: {
         action: "payaman_wishlist_bulk_remove",
         product_ids: productIds,
-        nonce: payaman_wishlist_object.nonce,
+        nonce: payaman_wishlist_object.nonce_bulk,
       },
       success: function (response) {
         if (!response || !response.success) {
@@ -426,7 +484,7 @@ jQuery(function ($) {
       type: "POST",
       data: {
         action: "payaman_wishlist_collection_create",
-        nonce: payaman_wishlist_object.nonce,
+        nonce: payaman_wishlist_object.nonce_collection,
         name: name,
         is_public: isPublic,
       },
@@ -497,6 +555,17 @@ jQuery(function ($) {
 
   $(document).on("click", "[data-payaman_wishlist-close]", function (event) {
     event.preventDefault();
+    closeModal();
+  });
+
+  $(document).on("click", ".payaman_wishlist-modal__confirm-yes", function () {
+    if (typeof confirmCallback === "function") {
+      confirmCallback();
+    }
+    closeModal();
+  });
+
+  $(document).on("click", ".payaman_wishlist-modal__backdrop", function () {
     closeModal();
   });
 
@@ -576,7 +645,7 @@ jQuery(function ($) {
       type: "POST",
       data: {
         action: "payaman_wishlist_collection_move_items",
-        nonce: payaman_wishlist_object.nonce,
+        nonce: payaman_wishlist_object.nonce_collection,
         product_ids: productIds,
         target_collection_id: target,
         source_collection_id: $wrapper.data("collection-id") || "",
@@ -677,6 +746,107 @@ jQuery(function ($) {
     },
   );
 
+  $(document).on("click", ".payaman_wishlist-remove-item", function (event) {
+    event.preventDefault();
+    var $btn = $(this);
+    var productId = parseInt($btn.data("product-id"), 10);
+    var collectionId = $btn.data("collection-id") || "";
+    if (!productId) return;
+    $btn.prop("disabled", true);
+    triggerWishlistAction("delete", productId, collectionId, 0);
+    $btn.prop("disabled", false);
+  });
+
+  $(document).on("click", ".payaman_wishlist-add-all-cart", function (event) {
+    event.preventDefault();
+    var $btn = $(this);
+    var $wrapper = $btn.closest(".payaman_wishlist-table-wrapper");
+    var $rows = $wrapper.find(
+      ".payaman_wishlist-table tbody tr[data-product-id]",
+    );
+    var productIds = [];
+    $rows.each(function () {
+      productIds.push($(this).data("product-id"));
+    });
+    if (!productIds.length) {
+      showModalAlert(payaman_wishlist_object.i18n.no_products_in_wishlist);
+      return;
+    }
+    $btn.prop("disabled", true).text(payaman_wishlist_object.i18n.adding_to_cart);
+    $.ajax({
+      url: payaman_wishlist_object.ajax_url,
+      type: "POST",
+      data: {
+        action: "payaman_wishlist_add_all_to_cart",
+        nonce: payaman_wishlist_object.nonce_bulk,
+        product_ids: productIds,
+      },
+      success: function (response) {
+        $btn.prop("disabled", false).text(payaman_wishlist_object.i18n.add_all_to_cart);
+        if (!response || !response.success) {
+          showModalAlert(
+            response && response.data && response.data.message
+              ? response.data.message
+              : payaman_wishlist_object.error_message,
+          );
+          return;
+        }
+        var data = response.data;
+        var noticeHtml =
+          '<div class="payaman_wishlist-cart-notice payaman_wishlist-cart-notice--success">' +
+          '<span class="payaman_wishlist-cart-notice__text">' +
+          data.message +
+          "</span>" +
+          '<a href="' +
+          payaman_wishlist_object.cart_url +
+          '" class="payaman_wishlist-cart-notice__link">' +
+          payaman_wishlist_object.i18n.view_cart +
+          "</a>" +
+          "</div>";
+        $wrapper.find(".payaman_wishlist-cart-notice").html(noticeHtml).show();
+        if (data.added && data.added.length) {
+          var list = parseWishlistCookie();
+          var changed = false;
+          for (var i = 0; i < data.added.length; i++) {
+            var pid = data.added[i];
+            var pos = list.indexOf(pid);
+            if (pos !== -1) {
+              list.splice(pos, 1);
+              changed = true;
+            }
+            $rows.filter('[data-product-id="' + pid + '"]').fadeOut(300, function () {
+              $(this).remove();
+            });
+            $(
+              '.payaman_wishlist-button[data-product-id="' +
+                pid +
+                '"], .payaman_wishlist[data-product-id="' +
+                pid +
+                '"]',
+            ).each(function () {
+              var $btn = $(this);
+              $btn.removeClass("on").addClass("off");
+              $btn.find("span").text(payaman_wishlist_object.off_val);
+              if (payaman_wishlist_object.button_type === "image") {
+                $btn.find("img").attr("src", payaman_wishlist_object.off_val);
+              }
+            });
+          }
+          if (changed) {
+            persistWishlistCookie(list);
+          }
+        }
+        setTimeout(function () {
+          $wrapper.find(".payaman_wishlist-cart-notice").fadeOut(500);
+        }, 5000);
+      },
+      error: function () {
+        $btn.prop("disabled", false).text(payaman_wishlist_object.i18n.add_all_to_cart);
+        showModalAlert(payaman_wishlist_object.error_message);
+      },
+    });
+  });
+
   $(document).ready(function () {
     updateBulkControls($(".payaman_wishlist-table-wrapper"));
     renderCollectionOptions(defaultCollectionId);
@@ -737,21 +907,20 @@ jQuery(function ($) {
         type: "POST",
         data: {
           action: "payaman_wishlist_collection_update",
-          nonce: payaman_wishlist_object.nonce,
+          nonce: payaman_wishlist_object.nonce_collection,
           collection_id: collectionId,
           is_public: newPublic ? "true" : "false",
         },
         success: function (response) {
           if (response.success) {
-            // Simply reload to reflect changes
             window.location.reload();
           } else {
-            alert(response.data.message || "Error updating collection.");
+            showModalAlert(response.data.message || "Error updating collection.");
             $btn.prop("disabled", false).css("opacity", "1");
           }
         },
         error: function () {
-          alert("Network error.");
+          showModalAlert("Network error.");
           $btn.prop("disabled", false).css("opacity", "1");
         },
       });
@@ -776,7 +945,7 @@ jQuery(function ($) {
   // Wishlist Page Collection Management
   $(document).on("click", ".payaman_wishlist-collection-add-new", function (e) {
     e.preventDefault();
-    var name = prompt(payaman_wishlist_object.i18n.fill_collection_name);
+    var name = window.prompt(payaman_wishlist_object.i18n.fill_collection_name);
     if (!name) return;
 
     var $btn = $(this);
@@ -787,7 +956,7 @@ jQuery(function ($) {
       type: "POST",
       data: {
         action: "payaman_wishlist_collection_create",
-        nonce: payaman_wishlist_object.nonce,
+        nonce: payaman_wishlist_object.nonce_collection,
         name: name,
         is_public: false,
       },
@@ -795,12 +964,12 @@ jQuery(function ($) {
         if (response.success) {
           window.location.reload();
         } else {
-          alert(response.data.message || "Error creating collection.");
+          showModalAlert(response.data.message || "Error creating collection.");
           $btn.prop("disabled", false).css("opacity", "1");
         }
       },
       error: function () {
-        alert("Network error.");
+        showModalAlert("Network error.");
         $btn.prop("disabled", false).css("opacity", "1");
       },
     });
@@ -810,7 +979,7 @@ jQuery(function ($) {
     e.preventDefault();
     var id = $(this).data("id");
     var currentName = $(this).data("name");
-    var newName = prompt("Enter new name:", currentName);
+    var newName = window.prompt(payaman_wishlist_object.i18n.rename_collection, currentName);
     if (!newName || newName === currentName) return;
 
     var $btn = $(this);
@@ -821,7 +990,7 @@ jQuery(function ($) {
       type: "POST",
       data: {
         action: "payaman_wishlist_collection_update",
-        nonce: payaman_wishlist_object.nonce,
+        nonce: payaman_wishlist_object.nonce_collection,
         collection_id: id,
         name: newName,
       },
@@ -829,12 +998,12 @@ jQuery(function ($) {
         if (response.success) {
           window.location.reload();
         } else {
-          alert(response.data.message || "Error updating collection.");
+          showModalAlert(response.data.message || "Error updating collection.");
           $btn.prop("disabled", false).css("opacity", "1");
         }
       },
       error: function () {
-        alert("Network error.");
+        showModalAlert("Network error.");
         $btn.prop("disabled", false).css("opacity", "1");
       },
     });
@@ -842,105 +1011,108 @@ jQuery(function ($) {
 
   $(document).on("click", ".payaman_wishlist-collection-delete", function (e) {
     e.preventDefault();
-    if (
-      !confirm(
-        "Are you sure you want to delete this collection? Products will be moved to the default collection.",
-      )
-    )
-      return;
 
-    var id = $(this).data("id");
     var $btn = $(this);
-    $btn.prop("disabled", true).css("opacity", "0.5");
+    var id = $btn.data("id");
 
-    $.ajax({
-      url: payaman_wishlist_object.ajax_url,
-      type: "POST",
-      data: {
-        action: "payaman_wishlist_collection_delete",
-        nonce: payaman_wishlist_object.nonce,
-        collection_id: id,
-      },
-      success: function (response) {
-        if (response.success) {
-          // Redirect to default collection if we deleted the current one
-          var url = new URL(window.location.href);
-          url.searchParams.delete("collection");
-          window.location.href = url.toString();
-        } else {
-          alert(response.data.message || "Error deleting collection.");
-          $btn.prop("disabled", false).css("opacity", "1");
-        }
-      },
-      error: function () {
-        alert("Network error.");
-        $btn.prop("disabled", false).css("opacity", "1");
-      },
-    });
+    showModalConfirm(
+      payaman_wishlist_object.i18n.confirm_delete_collection,
+      function () {
+        $btn.prop("disabled", true).css("opacity", "0.5");
 
-    // Handle WooCommerce Added to Cart
-    $(document.body).on(
-      "added_to_cart",
-      function (event, fragments, cart_hash, $button) {
-        if (payaman_wishlist_object.remove_after_add_to_cart !== "yes") {
-          return;
-        }
-
-        var productId = $button.data("product_id");
-        if (!productId) {
-          // Fallback for some themes
-          productId = $button.attr("value");
-        }
-
-        if (!productId) return;
-
-        // Find all wishlist buttons for this product and toggle them off
-        $(
-          '.payaman_wishlist-button[data-product-id="' +
-            productId +
-            '"], .payaman_wishlist[data-product-id="' +
-            productId +
-            '"]',
-        ).each(function () {
-          var $btn = $(this);
-          $btn.removeClass("on").addClass("off");
-          $btn.find("span").text(payaman_wishlist_object.off_val);
-          // If image type
-          if (payaman_wishlist_object.button_type === "image") {
-            $btn.find("img").attr("src", payaman_wishlist_object.off_val);
-          }
-
-          // Update count if visible
-          if (payaman_wishlist_object.payaman_wishlist_count === "yes") {
-            var $countLabel = $btn.find(".payaman_wishlist-count-label");
-            if ($countLabel.length) {
-              // Since it was added to cart, and we remove from wishlist,
-              // the count for this specific product on the button might need recalculation.
-              // But usually the button shows total wishlist count or product-specific?
-              // Actually our formatLabel adds count in brackets.
+        $.ajax({
+          url: payaman_wishlist_object.ajax_url,
+          type: "POST",
+          data: {
+            action: "payaman_wishlist_collection_delete",
+            nonce: payaman_wishlist_object.nonce_collection,
+            collection_id: id,
+          },
+          success: function (response) {
+            if (response.success) {
+              var url = new URL(window.location.href);
+              url.searchParams.delete("collection");
+              window.location.href = url.toString();
+            } else {
+              showModalAlert(response.data.message || "Error deleting collection.");
+              $btn.prop("disabled", false).css("opacity", "1");
             }
-          }
+          },
+          error: function () {
+            showModalAlert("Network error.");
+            $btn.prop("disabled", false).css("opacity", "1");
+          },
         });
-
-        // If we are on the wishlist page, remove the row
-        var $wishlistRow = $(
-          '.payaman_wishlist-table tr[data-product-id="' + productId + '"]',
-        );
-        if ($wishlistRow.length) {
-          $wishlistRow.fadeOut(300, function () {
-            $(this).remove();
-            // Check if table is empty
-            if ($(".payaman_wishlist-table tbody tr").length === 0) {
-              var emptyMsg = $(".payaman_wishlist-table-wrapper").data(
-                "empty-message",
-              );
-              $(".payaman_wishlist-table-wrapper").html(
-                '<p class="payaman_wishlist-empty">' + emptyMsg + "</p>",
-              );
-            }
-          });
-        }
       },
     );
   });
+
+  // Handle WooCommerce Added to Cart
+  $(document.body).on(
+    "added_to_cart",
+    function (event, fragments, cart_hash, $button) {
+      var isOnWishlistPage = $button.closest(".payaman_wishlist-table-wrapper").length > 0;
+
+      if (payaman_wishlist_object.remove_after_add_to_cart !== "yes" && !isOnWishlistPage) {
+        return;
+      }
+
+      var productId = $button.data("product_id");
+      if (!productId) {
+        productId = $button.attr("value");
+      }
+
+      if (!productId) return;
+
+      if (isOnWishlistPage) {
+        var list = parseWishlistCookie();
+        var pos = list.indexOf(productId);
+        if (pos !== -1) {
+          list.splice(pos, 1);
+          persistWishlistCookie(list);
+        }
+        $.ajax({
+          url: payaman_wishlist_object.ajax_url,
+          type: "POST",
+          data: {
+            action: "payaman_wishlist_remove_from_table",
+            product_id: productId,
+            nonce: payaman_wishlist_object.nonce,
+          },
+        });
+      }
+
+      $(
+        '.payaman_wishlist-button[data-product-id="' +
+          productId +
+          '"], .payaman_wishlist[data-product-id="' +
+          productId +
+          '"]',
+      ).each(function () {
+        var $btn = $(this);
+        $btn.removeClass("on").addClass("off");
+        $btn.find("span").text(payaman_wishlist_object.off_val);
+        if (payaman_wishlist_object.button_type === "image") {
+          $btn.find("img").attr("src", payaman_wishlist_object.off_val);
+        }
+      });
+
+      var $wishlistRow = $(
+        '.payaman_wishlist-table tr[data-product-id="' + productId + '"]',
+      );
+      if ($wishlistRow.length) {
+        $wishlistRow.fadeOut(300, function () {
+          $(this).remove();
+          if ($(".payaman_wishlist-table tbody tr").length === 0) {
+            var emptyMsg = $(".payaman_wishlist-table-wrapper").data(
+              "empty-message",
+            );
+            $(".payaman_wishlist-table-wrapper").html(
+              '<p class="payaman_wishlist-empty">' + emptyMsg + "</p>",
+            );
+          }
+        });
+      }
+    },
+  );
 });

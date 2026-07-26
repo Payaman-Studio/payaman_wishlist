@@ -95,6 +95,7 @@ if (! class_exists('Payaman_Wishlist_Admin_Page')) {
 					'enabled'                       => isset($post_data['payaman_wishlist_enabled']) ? 'yes' : 'no',
 					'payaman_wishlist_count'        => isset($post_data['payaman_wishlist_count']) ? 'yes' : 'no',
 					'required_login'                => isset($post_data['payaman_wishlist_required_login']) ? 'yes' : 'no',
+					'use_legacy_meta'               => isset($post_data['payaman_wishlist_use_legacy_meta']) ? 'yes' : 'no',
 					'display_position_button'       => isset($post_data['display_position_button']) ? sanitize_text_field($post_data['display_position_button']) : '',
 					'type_active'                   => isset($post_data['payaman_wishlist_type']) ? sanitize_text_field($post_data['payaman_wishlist_type']) : 'text',
 					'display_on'                    => array_values(array_unique($display_on)),

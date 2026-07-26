@@ -78,6 +78,32 @@ function payaman_wishlist_get_stats()
 }
 
 /**
+ * Check if a specific user has a product in their wishlist.
+ *
+ * @param int $user_id
+ * @param int $product_id
+ * @return bool
+ */
+function payaman_wishlist_user_has_product($user_id, $product_id)
+{
+	global $wpdb;
+	$items_table       = payaman_wishlist_get_table_name('items');
+	$collections_table = payaman_wishlist_get_table_name('collections');
+
+	$found = $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT COUNT(*) FROM {$items_table} i
+			 INNER JOIN {$collections_table} c ON c.id = i.collection_id
+			 WHERE c.user_id = %d AND i.product_id = %d",
+			$user_id,
+			$product_id
+		)
+	);
+
+	return (bool) $found;
+}
+
+/**
  * Get user IDs who have a specific product in their wishlist.
  *
  * @param int $product_id

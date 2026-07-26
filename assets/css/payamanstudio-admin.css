@@ -194,3 +194,360 @@ input:checked + .payaman_wishlist-slider:before {
   border-top: 1px solid #ccc;
   background: #f4f5f6;
 }
+
+/* Documentation Tab */
+.payaman-doc-wrap {
+  max-width: 960px;
+}
+
+/* Hero */
+.payaman-doc-hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
+  border: 1px solid #d4e0f0;
+  padding: 28px 30px;
+  margin-bottom: 35px;
+  border-radius: 10px;
+}
+
+.payaman-doc-hero-icon {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(34, 113, 177, 0.12);
+}
+
+.payaman-doc-hero-text h2 {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1d2327;
+}
+
+.payaman-doc-hero-text p {
+  margin: 0;
+  color: #50575e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Section Headers */
+.payaman-doc-section {
+  margin-bottom: 40px;
+}
+
+.payaman-doc-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.payaman-doc-section-number {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2271b1;
+  background: #e8f0fe;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.payaman-doc-section-header h3 {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0;
+  color: #1d2327;
+}
+
+/* Installation Steps */
+.payaman-doc-steps {
+  position: relative;
+}
+
+.payaman-doc-step {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 0;
+}
+
+.payaman-doc-step-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 38px;
+  flex-shrink: 0;
+}
+
+.payaman-doc-step-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2271b1, #175d95);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(34, 113, 177, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.payaman-doc-step-line {
+  width: 2px;
+  flex: 1;
+  background: linear-gradient(to bottom, #d4e0f0, #e8f0fe);
+  min-height: 20px;
+}
+
+.payaman-doc-step:last-child .payaman-doc-step-line {
+  display: none;
+}
+
+.payaman-doc-step-body {
+  padding-bottom: 28px;
+  flex: 1;
+}
+
+.payaman-doc-step-body h4 {
+  margin: 2px 0 4px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.payaman-doc-step-body p {
+  margin: 0;
+  font-size: 13px;
+  color: #50575e;
+  line-height: 1.6;
+}
+
+/* Usage Cards */
+.payaman-doc-usage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 782px) {
+  .payaman-doc-usage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payaman-doc-usage-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.payaman-doc-usage-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+.payaman-doc-usage-card-top {
+  margin-bottom: 12px;
+}
+
+.payaman-doc-usage-card h4 {
+  margin: 0 0 14px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.payaman-doc-usage-card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.payaman-doc-usage-card ul li {
+  position: relative;
+  padding: 5px 0 5px 20px;
+  font-size: 13px;
+  color: #50575e;
+  line-height: 1.5;
+}
+
+.payaman-doc-usage-card ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2271b1;
+}
+
+.payaman-doc-usage-card:first-child ul li::before {
+  background: #e25555;
+}
+
+/* Feature Cards */
+.payaman-doc-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 18px;
+}
+
+.payaman-doc-feature-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.payaman-doc-feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+.payaman-doc-feature-card-accent {
+  height: 4px;
+  width: 100%;
+}
+
+.payaman-doc-feature-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin: 18px 0 0 18px;
+}
+
+.payaman-doc-feature-card h4 {
+  margin: 12px 18px 6px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.payaman-doc-feature-card p {
+  margin: 0 18px 18px 18px;
+  font-size: 13px;
+  color: #50575e;
+  line-height: 1.6;
+}
+
+/* Code Box */
+.payaman-doc-code-box {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.payaman-doc-code-box-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: #f6f8fa;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 13px;
+  font-weight: 600;
+  color: #50575e;
+}
+
+/* Shortcode Table */
+.payaman-doc-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payaman-doc-table th {
+  padding: 12px 18px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: #50575e;
+  background: #fafbfc;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.payaman-doc-table td {
+  padding: 12px 18px;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f1;
+  color: #50575e;
+}
+
+.payaman-doc-table tr:last-child td {
+  border-bottom: none;
+}
+
+.payaman-doc-table td code {
+  background: #e8f0fe;
+  color: #2271b1;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* FAQ */
+.payaman-doc-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payaman-doc-faq-item {
+  display: flex;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 18px 20px;
+  transition: box-shadow 0.2s;
+}
+
+.payaman-doc-faq-item:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.payaman-doc-faq-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: #f0f7ff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.payaman-doc-faq-body h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.payaman-doc-faq-body p {
+  margin: 0;
+  font-size: 13px;
+  color: #50575e;
+  line-height: 1.6;
+}

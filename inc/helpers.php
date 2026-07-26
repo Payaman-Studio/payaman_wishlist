@@ -188,6 +188,38 @@ function payaman_wishlist_maybe_run_migrations()
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query("UPDATE {$campaigns_table} SET scheduled_at = CONCAT(scheduled_at, ':00') WHERE scheduled_at IS NOT NULL AND LENGTH(scheduled_at) = 16 AND scheduled_at NOT LIKE '%:%:%'");
 	}
+
+	// v2.4.0 — Add composite indexes for performance.
+	$items_table_name = payaman_wishlist_get_table_name('items');
+	$collections_table_name = payaman_wishlist_get_table_name('collections');
+	$required_indexes = array(
+		'collection_product' => "ALTER TABLE {$items_table_name} ADD INDEX collection_product (collection_id, product_id)",
+		'product_added'      => "ALTER TABLE {$items_table_name} ADD INDEX product_added (product_id, added_at)",
+		'user_default'       => "ALTER TABLE {$collections_table_name} ADD INDEX user_default (user_id, is_default)",
+	);
+	$existing_indexes = $wpdb->get_results("SHOW INDEX FROM {$items_table_name}");
+	$existing_index_names = array();
+	if ($existing_indexes) {
+		foreach ($existing_indexes as $idx) {
+			$existing_index_names[] = $idx->Key_name;
+		}
+	}
+	$existing_col_indexes = $wpdb->get_results("SHOW INDEX FROM {$collections_table_name}");
+	if ($existing_col_indexes) {
+		foreach ($existing_col_indexes as $idx) {
+			$existing_index_names[] = $idx->Key_name;
+		}
+	}
+	foreach ($required_indexes as $name => $sql) {
+		if (! in_array($name, $existing_index_names, true)) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query($sql);
+		}
+	}
+	$installed_version = get_option('payaman_wishlist_db_version');
+	if ($installed_version !== '2.4.0') {
+		update_option('payaman_wishlist_db_version', '2.4.0');
+	}
 }
 
 /**
@@ -215,7 +247,7 @@ function payaman_wishlist_client_ip()
 }
 
 /**
- * get payaman_wishlist by product_id
+ * get payaman_wishlist count by product_id
  *
  * @param int $product_id ID Product
  *
@@ -223,8 +255,22 @@ function payaman_wishlist_client_ip()
  */
 function get_payaman_wishlist($product_id)
 {
-	$wishlists = payaman_wishlist_get_wishlists($product_id);
-	return $wishlists ? count($wishlists) : '';
+	$product_id = absint($product_id);
+	if (! $product_id) {
+		return '';
+	}
+
+	global $wpdb;
+	$items_table = payaman_wishlist_get_table_name('items');
+
+	$count = $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT COUNT(*) FROM {$items_table} WHERE product_id = %d",
+			$product_id
+		)
+	);
+
+	return $count ? (int) $count : '';
 }
 
 /**
@@ -253,6 +299,7 @@ function payaman_wishlist_default_setting()
 		'enabled'                       => 'yes',
 		'payaman_wishlist_count'                    => 'no',
 		'required_login'                => 'no',
+		'use_legacy_meta'               => 'no',
 		'display_position_button'       => 'after_add_to_cart',
 		'type_active'                   => 'text',
 		'enable_add_success_message'    => 'yes',
@@ -449,6 +496,10 @@ function payaman_wishlist_store_wishlists($product_id, array $wishlists)
 		return false;
 	}
 
+	if ('yes' !== payaman_wishlist_setting('use_legacy_meta', 'no')) {
+		return true;
+	}
+
 	$wishlists = array_values(array_unique(array_filter(array_map('strval', $wishlists), 'strlen')));
 
 	if (empty($wishlists)) {
@@ -523,7 +574,7 @@ function payaman_wishlist_sanitize_collection_name($name)
 function payaman_wishlist_get_default_collection_id($user_id)
 {
 	$default = payaman_wishlist_get_default_collection($user_id, true);
-	return $default ? $default['slug'] : 'default_' . absint($user_id);
+	return $default ? $default['slug'] : '';
 }
 
 function payaman_wishlist_get_default_collection($user_id, $create_if_missing = false)
@@ -560,7 +611,7 @@ function payaman_wishlist_get_default_collection($user_id, $create_if_missing = 
 		__('My Wishlist', 'payaman_wishlist'),
 		false,
 		true,
-		'default_' . $user_id
+		wp_generate_uuid4()
 	);
 }
 
@@ -785,6 +836,50 @@ function payaman_wishlist_update_user_wishlists($user_id, $product_id, $fav_acti
 		)
 	);
 	return $user_still_has_product;
+}
+
+function payaman_wishlist_remove_product_from_user($user_id, $product_id)
+{
+	global $wpdb;
+	$user_id    = absint($user_id);
+	$product_id = absint($product_id);
+	if (! $user_id || ! $product_id) {
+		return false;
+	}
+	$items_table      = payaman_wishlist_get_table_name('items');
+	$collections_table = payaman_wishlist_get_table_name('collections');
+	$collections = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT id FROM {$collections_table} WHERE user_id = %d",
+			$user_id
+		)
+	);
+	$deleted = false;
+	if (! empty($collections)) {
+		$ids_placeholder = implode(',', array_fill(0, count($collections), '%d'));
+		$params          = array_merge($collections, array($product_id));
+		$deleted_rows    = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$items_table} WHERE collection_id IN ({$ids_placeholder}) AND product_id = %d",
+				$params
+			)
+		);
+		$deleted = $deleted_rows > 0;
+	}
+	$wishlists = array_values(
+		array_filter(
+			payaman_wishlist_get_wishlists($product_id),
+			function ($wishlist) use ($user_id) {
+				return $wishlist !== (string) $user_id;
+			}
+		)
+	);
+	if (empty($wishlists)) {
+		delete_post_meta($product_id, 'payaman_wishlist');
+	} else {
+		update_post_meta($product_id, 'payaman_wishlist', ',' . implode(',', $wishlists) . ',');
+	}
+	return $deleted;
 }
 
 function payaman_wishlist_create_collection($user_id, $name, $is_public = false)

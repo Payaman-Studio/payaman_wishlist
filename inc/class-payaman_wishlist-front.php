@@ -201,6 +201,8 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			$payaman_wishlist_object = array(
 				'ajax_url'                      => admin_url('admin-ajax.php'),
 				'nonce'                         => wp_create_nonce('payaman_wishlist_toggle'),
+				'nonce_bulk'                    => wp_create_nonce('payaman_wishlist_bulk'),
+				'nonce_collection'              => wp_create_nonce('payaman_wishlist_collection'),
 				'button_type'                   => $button_type,
 				'required_login'                => payaman_wishlist_setting('required_login', 'no'),
 				'is_login'                      => is_user_logged_in(),
@@ -215,6 +217,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 				'required_login_message'        => payaman_wishlist_setting('required_login_message', __('You must be logged in.', 'payaman_wishlist')),
 				'error_message'                 => __('Unable to update wishlist. Please try again.', 'payaman_wishlist'),
 				'wishlist_page_url'             => payaman_wishlist_get_wishlist_page_url(),
+				'cart_url'                      => wc_get_cart_url(),
 				'collections'                   => $collections_response,
 				'default_collection_id'         => $default_collection_id,
 				'collection_limit'              => PAYAMAN_WISHLIST_COLLECTION_LIMIT,
@@ -226,6 +229,17 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 					'collection_limit_reached' => __('Collection limit has been reached.', 'payaman_wishlist'),
 					'generic_error'           => __('An error occurred. Please try again.', 'payaman_wishlist'),
 					'no_collections_yet'      => __('No collections yet', 'payaman_wishlist'),
+					'ok'                      => __('OK', 'payaman_wishlist'),
+					'cancel'                  => __('Cancel', 'payaman_wishlist'),
+					'yes'                     => __('Yes', 'payaman_wishlist'),
+					'close'                   => __('Close', 'payaman_wishlist'),
+					'view_wishlist'           => __('View Wishlist', 'payaman_wishlist'),
+					'confirm_delete_collection' => __('Are you sure you want to delete this collection? Products will be moved to the default collection.', 'payaman_wishlist'),
+					'rename_collection'       => __('Enter new name:', 'payaman_wishlist'),
+					'add_all_to_cart'         => __('Add All to Cart', 'payaman_wishlist'),
+					'adding_to_cart'          => __('Adding…', 'payaman_wishlist'),
+					'view_cart'               => __('View Cart', 'payaman_wishlist'),
+					'no_products_in_wishlist' => __('No products in this collection.', 'payaman_wishlist'),
 				),
 			);
 
@@ -338,15 +352,19 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 		public function get_wishlist_by_user($product_id, $user_id)
 		{
 			$product_id = absint($product_id);
-			$user_id    = (string) absint($user_id);
+			$user_id    = absint($user_id);
 
-			if (! $product_id || '' === $user_id) {
+			if (! $product_id || ! $user_id) {
 				return 0;
+			}
+
+			if (payaman_wishlist_user_has_product($user_id, $product_id)) {
+				return 1;
 			}
 
 			$wishlists = payaman_wishlist_get_wishlists($product_id);
 
-			return in_array($user_id, $wishlists, true) ? 1 : 0;
+			return in_array((string) $user_id, $wishlists, true) ? 1 : 0;
 		}
 
 		/**
@@ -380,14 +398,18 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			);
 
 			$active_collection = isset($_GET['collection']) ? sanitize_text_field(wp_unslash($_GET['collection'])) : sanitize_text_field($atts['collection']);
-			
+
 			if (is_user_logged_in() && empty($active_collection)) {
 				$active_collection = payaman_wishlist_get_default_collection_id(get_current_user_id());
 			}
 
+			$per_page = PAYAMAN_WISHLIST_ITEMS_PER_PAGE;
+			$paged    = isset($_GET['paged']) ? max(1, absint($_GET['paged'])) : 1;
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
 			$list_wishlist = array();
 
-			// Handle ?share={slug} — tampilkan koleksi publik milik user lain
+			// Handle ?share={slug}
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$share_slug = isset($_GET['share']) ? sanitize_text_field(wp_unslash($_GET['share'])) : '';
 			if ($share_slug) {
@@ -399,11 +421,14 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 				$list_wishlist = $public_collection['product_ids'];
 				$list_wishlist = array_values(array_unique(array_filter($list_wishlist)));
 				if (! empty($list_wishlist)) {
+					$total      = count($list_wishlist);
+					$offset     = ($paged - 1) * $per_page;
+					$page_ids   = array_slice($list_wishlist, $offset, $per_page);
 					$args = array(
 						'post_type'           => 'product',
-						'posts_per_page'      => -1,
+						'posts_per_page'      => $per_page,
 						'post_status'         => 'publish',
-						'post__in'            => $list_wishlist,
+						'post__in'            => $page_ids,
 						'orderby'             => 'post__in',
 						'ignore_sticky_posts' => true,
 					);
@@ -411,12 +436,12 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 					if ($products->have_posts()) {
 						echo '<p class="payaman_wishlist-shared-notice">'
 							. sprintf(
-								/* translators: %s: collection name */
 								esc_html__('Shared collection: %s', 'payaman_wishlist'),
 								'<strong>' . esc_html($public_collection['name']) . '</strong>'
 							)
 							. '</p>';
-						$this->render_wishlist_table($products, '');
+						$this->render_wishlist_table($products, $active_collection);
+						$this->render_pagination($total, $per_page, $paged);
 						wp_reset_postdata();
 					} else {
 						$this->render_empty_message();
@@ -445,22 +470,62 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			$products = null;
 
 			if (! empty($list_wishlist)) {
-				$args = array(
-					'post_type'           => 'product',
-					'posts_per_page'      => -1,
-					'post_status'         => 'publish',
-					'post__in'            => $list_wishlist,
-					'orderby'             => 'post__in',
-					'ignore_sticky_posts' => true,
-				);
-				$products = new WP_Query($args);
+				$total    = count($list_wishlist);
+				$offset   = ($paged - 1) * $per_page;
+				$page_ids = array_slice($list_wishlist, $offset, $per_page);
+
+				if (! empty($page_ids)) {
+					$args = array(
+						'post_type'           => 'product',
+						'posts_per_page'      => $per_page,
+						'post_status'         => 'publish',
+						'post__in'            => $page_ids,
+						'orderby'             => 'post__in',
+						'ignore_sticky_posts' => true,
+					);
+					$products = new WP_Query($args);
+				}
 			}
 
 			$this->render_wishlist_table($products, $active_collection);
 
+			if (! empty($list_wishlist)) {
+				$this->render_pagination(count($list_wishlist), $per_page, $paged);
+			}
+
 			if ($products) {
 				wp_reset_postdata();
 			}
+		}
+
+		/**
+		 * Render pagination links.
+		 *
+		 * @param int $total
+		 * @param int $per_page
+		 * @param int $current
+		 */
+		private function render_pagination($total, $per_page, $current)
+		{
+			$total_pages = ceil($total / $per_page);
+			if ($total_pages <= 1) {
+				return;
+			}
+
+			$big   = 999999999;
+			$args  = array(
+				'base'      => str_replace($big, '%#%', esc_url(add_query_arg('paged', $big))),
+				'format'    => '?paged=%#%',
+				'current'   => $current,
+				'total'     => $total_pages,
+				'type'      => 'list',
+				'prev_text' => '&laquo;',
+				'next_text' => '&raquo;',
+			);
+
+			echo '<div class="payaman_wishlist-pagination">';
+			echo paginate_links($args);
+			echo '</div>';
 		}
 
 
@@ -553,6 +618,9 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 							</button>
 						</div>
 						<div class="payaman_wishlist-bulk-controls">
+							<button type="button" class="button button-primary payaman_wishlist-add-all-cart">
+								<?php esc_html_e('Add All to Cart', 'payaman_wishlist'); ?>
+							</button>
 							<?php if (! empty($collections)) : ?>
 								<div class="payaman_wishlist-bulk-move">
 									<select class="payaman_wishlist-bulk-move-target">
@@ -566,6 +634,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 							<?php endif; ?>
 						</div>
 					</div>
+					<div class="payaman_wishlist-cart-notice" style="display:none;"></div>
 					<div class="payaman_wishlist-table-responsive">
 						<table class="payaman_wishlist-table">
 						<thead>
@@ -664,15 +733,16 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			<div id="payaman_wishlist-toast" class="payaman_wishlist-toast" aria-live="polite"></div>
 			
 			<div id="payaman_wishlist-modal" class="payaman_wishlist-modal" aria-hidden="true" data-view="message">
-				<div class="payaman_wishlist-modal__backdrop" data-payaman_wishlist-close></div>
+				<div class="payaman_wishlist-modal__backdrop"></div>
 				<div class="payaman_wishlist-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="payaman_wishlist-modal-message">
 					<div class="payaman_wishlist-modal__content">
 						<div class="payaman_wishlist-modal__view payaman_wishlist-modal__view--message">
 							<p id="payaman_wishlist-modal-message" class="payaman_wishlist-modal__message"></p>
-							<div class="payaman_wishlist-modal__actions">
-								<a href="<?php echo esc_url($wishlist_url); ?>" class="button payaman_wishlist-modal__view-link"><?php esc_html_e('View Wishlist', 'payaman_wishlist'); ?></a>
-								<button type="button" class="button payaman_wishlist-modal__close" data-payaman_wishlist-close><?php esc_html_e('Close', 'payaman_wishlist'); ?></button>
-							</div>
+							<div class="payaman_wishlist-modal__actions"></div>
+						</div>
+						<div class="payaman_wishlist-modal__view payaman_wishlist-modal__view--confirm">
+							<p class="payaman_wishlist-modal__message"></p>
+							<div class="payaman_wishlist-modal__actions"></div>
 						</div>
 					</div>
 				</div>

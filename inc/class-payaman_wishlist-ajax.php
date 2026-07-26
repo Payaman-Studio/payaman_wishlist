@@ -20,6 +20,8 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			add_action('wp_ajax_nopriv_update_payaman_wishlist', array($this, 'ajax_update_payaman_wishlist_callback'));
 			add_action('wp_ajax_payaman_wishlist_bulk_remove', array($this, 'ajax_payaman_wishlist_bulk_remove_callback'));
 			add_action('wp_ajax_nopriv_payaman_wishlist_bulk_remove', array($this, 'ajax_payaman_wishlist_bulk_remove_callback'));
+			add_action('wp_ajax_payaman_wishlist_add_all_to_cart', array($this, 'ajax_add_all_to_cart'));
+			add_action('wp_ajax_payaman_wishlist_remove_from_table', array($this, 'ajax_remove_from_table'));
 			add_action('wp_ajax_payaman_wishlist_collection_create', array($this, 'ajax_payaman_wishlist_collection_create'));
 			add_action('wp_ajax_payaman_wishlist_collection_update', array($this, 'ajax_payaman_wishlist_collection_update'));
 			add_action('wp_ajax_payaman_wishlist_collection_delete', array($this, 'ajax_payaman_wishlist_collection_delete'));
@@ -102,7 +104,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 		public function ajax_payaman_wishlist_bulk_remove_callback()
 		{
-			check_ajax_referer('payaman_wishlist_toggle', 'nonce');
+			check_ajax_referer('payaman_wishlist_bulk', 'nonce');
 
 			$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
 			$product_ids = array_values(array_unique(array_filter(array_map('absint', $product_ids))));
@@ -141,23 +143,115 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 					)
 				);
 
-				if (payaman_wishlist_store_wishlists($product_id, $wishlists) === false) {
-					continue;
+				if (empty($wishlists)) {
+					delete_post_meta($product_id, 'payaman_wishlist');
+				} else {
+					update_post_meta($product_id, 'payaman_wishlist', ',' . implode(',', $wishlists) . ',');
 				}
 
 				$removed[] = $product_id;
 
 				if ($current_user_id) {
-					payaman_wishlist_update_user_wishlists($current_user_id, $product_id, 'delete', $collection_id);
+					payaman_wishlist_remove_product_from_user($current_user_id, $product_id);
 				}
 			}
 
 			wp_send_json_success(array('removed' => $removed));
 		}
 
-		public function ajax_payaman_wishlist_collection_create()
+		public function ajax_add_all_to_cart()
+		{
+			check_ajax_referer('payaman_wishlist_bulk', 'nonce');
+
+			if (! is_user_logged_in()) {
+				wp_send_json_error(array('message' => __('You must be logged in.', 'payaman_wishlist')), 403);
+			}
+
+			$user_id = get_current_user_id();
+			$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
+			$product_ids = array_values(array_unique(array_filter(array_map('absint', $product_ids))));
+
+			if (empty($product_ids)) {
+				wp_send_json_error(array('message' => __('No products selected.', 'payaman_wishlist')), 400);
+			}
+
+			$added   = array();
+			$skipped = array();
+
+			foreach ($product_ids as $product_id) {
+				$product = wc_get_product($product_id);
+				if (! $product) {
+					continue;
+				}
+
+				if (! $product->is_purchasable() || ! $product->is_in_stock()) {
+					$skipped[] = array(
+						'id'   => $product_id,
+						'name' => $product->get_name(),
+						'reason' => __('Not purchasable or out of stock', 'payaman_wishlist'),
+					);
+					continue;
+				}
+
+				if ($product->is_type('variable') || $product->is_type('grouped')) {
+					$skipped[] = array(
+						'id'   => $product_id,
+						'name' => $product->get_name(),
+						'reason' => __('Please select options', 'payaman_wishlist'),
+					);
+					continue;
+				}
+
+				$cart_item_key = WC()->cart->add_to_cart($product_id, 1);
+				if ($cart_item_key) {
+					$added[] = $product_id;
+					payaman_wishlist_remove_product_from_user($user_id, $product_id);
+				}
+			}
+
+			$message = sprintf(
+				/* translators: %d: number of products added to cart */
+				__('%d product(s) added to cart.', 'payaman_wishlist'),
+				count($added)
+			);
+
+			if (! empty($skipped)) {
+				$message .= ' ' . sprintf(
+					/* translators: %d: number of products skipped */
+					__('%d product(s) skipped (variable/grouped/out of stock).', 'payaman_wishlist'),
+					count($skipped)
+				);
+			}
+
+			wp_send_json_success(array(
+				'message' => $message,
+				'added'   => $added,
+				'skipped' => $skipped,
+				'cart_url' => wc_get_cart_url(),
+			));
+		}
+
+		public function ajax_remove_from_table()
 		{
 			check_ajax_referer('payaman_wishlist_toggle', 'nonce');
+
+			if (! is_user_logged_in()) {
+				wp_send_json_error(array('message' => __('You must be logged in.', 'payaman_wishlist')), 403);
+			}
+
+			$product_id = isset($_POST['product_id']) ? absint(wp_unslash($_POST['product_id'])) : 0;
+			if (! $product_id) {
+				wp_send_json_error(array('message' => __('Invalid product.', 'payaman_wishlist')), 400);
+			}
+
+			payaman_wishlist_remove_product_from_user(get_current_user_id(), $product_id);
+
+			wp_send_json_success(array('removed' => $product_id));
+		}
+
+		public function ajax_payaman_wishlist_collection_create()
+		{
+			check_ajax_referer('payaman_wishlist_collection', 'nonce');
 
 			if (! is_user_logged_in()) {
 				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman_wishlist')), 403);
@@ -181,7 +275,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 		public function ajax_payaman_wishlist_collection_update()
 		{
-			check_ajax_referer('payaman_wishlist_toggle', 'nonce');
+			check_ajax_referer('payaman_wishlist_collection', 'nonce');
 
 			if (! is_user_logged_in()) {
 				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman_wishlist')), 403);
@@ -214,7 +308,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 		public function ajax_payaman_wishlist_collection_delete()
 		{
-			check_ajax_referer('payaman_wishlist_toggle', 'nonce');
+			check_ajax_referer('payaman_wishlist_collection', 'nonce');
 
 			if (! is_user_logged_in()) {
 				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman_wishlist')), 403);
@@ -237,7 +331,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 		public function ajax_payaman_wishlist_collection_move_items()
 		{
-			check_ajax_referer('payaman_wishlist_toggle', 'nonce');
+			check_ajax_referer('payaman_wishlist_collection', 'nonce');
 
 			if (! is_user_logged_in()) {
 				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman_wishlist')), 403);

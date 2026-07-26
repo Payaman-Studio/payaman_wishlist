@@ -67,7 +67,8 @@ jQuery(function ($) {
     payaman_wishlist_change_type($(this).val());
   });
 
-  $(".payaman_wishlist-menu li a").on("click", function () {
+  $(".payaman_wishlist-menu li a").on("click", function (e) {
+    e.preventDefault();
     payaman_wishlist_change_section($(this).attr("href"));
   });
 
