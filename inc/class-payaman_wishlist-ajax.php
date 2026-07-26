@@ -130,23 +130,20 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 				}
 
 				$wishlists = payaman_wishlist_get_wishlists($product_id);
-				if (empty($wishlists)) {
-					continue;
-				}
-
-				$wishlists = array_values(
-					array_filter(
-						$wishlists,
-						function ($wishlist) use ($fav_user) {
-							return $wishlist !== $fav_user;
-						}
-					)
-				);
-
-				if (empty($wishlists)) {
-					delete_post_meta($product_id, 'payaman_wishlist');
-				} else {
-					update_post_meta($product_id, 'payaman_wishlist', ',' . implode(',', $wishlists) . ',');
+				if (! empty($wishlists)) {
+					$wishlists = array_values(
+						array_filter(
+							$wishlists,
+							function ($wishlist) use ($fav_user) {
+								return $wishlist !== $fav_user;
+							}
+						)
+					);
+					if (empty($wishlists)) {
+						delete_post_meta($product_id, 'payaman_wishlist');
+					} else {
+						update_post_meta($product_id, 'payaman_wishlist', ',' . implode(',', $wishlists) . ',');
+					}
 				}
 
 				$removed[] = $product_id;
