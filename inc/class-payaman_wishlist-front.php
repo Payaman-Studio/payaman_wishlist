@@ -239,7 +239,10 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 					'add_all_to_cart'         => __('Add All to Cart', 'payaman_wishlist'),
 					'adding_to_cart'          => __('Adding…', 'payaman_wishlist'),
 					'view_cart'               => __('View Cart', 'payaman_wishlist'),
-					'move_success'            => __('Items moved successfully.', 'payaman_wishlist'),
+					'move_success'             => __('Items moved successfully.', 'payaman_wishlist'),
+					'move_to_collection'      => __('Move to collection:', 'payaman_wishlist'),
+					'move'                    => __('Move', 'payaman_wishlist'),
+					'no_other_collections'    => __('No other collections available.', 'payaman_wishlist'),
 					'no_products_in_wishlist' => __('No products in this collection.', 'payaman_wishlist'),
 				),
 			);
@@ -609,29 +612,23 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			<div class="payaman_wishlist-table-wrapper" data-empty-message="<?php echo esc_attr($empty_message); ?>" data-collection-id="<?php echo esc_attr($current_collection_id); ?>">
 				<?php if ($products && $products->have_posts()) : ?>
 					<div class="payaman_wishlist-bulk-toolbar">
-						<div class="payaman_wishlist-bulk-actions">
+						<div class="payaman_wishlist-bulk-left">
 							<label class="payaman_wishlist-bulk-select-all-wrapper">
 								<input type="checkbox" class="payaman_wishlist-bulk-select-all" />
 								<span><?php esc_html_e('Select All', 'payaman_wishlist'); ?></span>
 							</label>
+						</div>
+						<div class="payaman_wishlist-bulk-right">
+							<button type="button" class="button payaman_wishlist-add-all-cart">
+								<?php esc_html_e('Add All to Cart', 'payaman_wishlist'); ?>
+							</button>
 							<button type="button" class="button payaman_wishlist-bulk-remove" disabled>
 								<?php esc_html_e('Remove Selected', 'payaman_wishlist'); ?>
 							</button>
-						</div>
-						<div class="payaman_wishlist-bulk-controls">
-							<button type="button" class="button button-primary payaman_wishlist-add-all-cart">
-								<?php esc_html_e('Add All to Cart', 'payaman_wishlist'); ?>
-							</button>
 							<?php if (! empty($collections)) : ?>
-								<div class="payaman_wishlist-bulk-move">
-									<select class="payaman_wishlist-bulk-move-target">
-										<option value=""><?php esc_html_e('Move to…', 'payaman_wishlist'); ?></option>
-										<?php foreach ($collections as $collection) : ?>
-											<option value="<?php echo esc_attr($collection['id']); ?>"><?php echo esc_html($collection['name']); ?></option>
-										<?php endforeach; ?>
-									</select>
-									<button type="button" class="button payaman_wishlist-bulk-move-button" disabled><?php esc_html_e('Move Selected', 'payaman_wishlist'); ?></button>
-								</div>
+								<button type="button" class="button payaman_wishlist-bulk-move-button" disabled>
+									<?php esc_html_e('Move Selected', 'payaman_wishlist'); ?>
+								</button>
 							<?php endif; ?>
 						</div>
 					</div>
