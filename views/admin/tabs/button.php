@@ -39,14 +39,14 @@ $payaman_wishlist_image_val_on  = payaman_wishlist_setting('image_val_on');
 			<td>
 				<select name="display_position_button" id="display_position_button">
 					<?php
-					$button_positions = array(
+					$payaman_wishlist_button_positions = array(
 						'after_add_to_cart' => __('After Add to Cart', 'payaman_wishlist'),
 						'overlay_top_left'  => __('Overlay Product Image', 'payaman_wishlist'),
 					);
-					$current_position = payaman_wishlist_setting('display_position_button', 'after_add_to_cart');
-					foreach ($button_positions as $value => $label) :
+					$payaman_wishlist_current_position = payaman_wishlist_setting('display_position_button', 'after_add_to_cart');
+					foreach ($payaman_wishlist_button_positions as $payaman_wishlist_pos_value => $payaman_wishlist_pos_label) :
 					?>
-						<option value="<?php echo esc_attr($value); ?>" <?php selected($current_position, $value); ?>><?php echo esc_html($label); ?></option>
+						<option value="<?php echo esc_attr($payaman_wishlist_pos_value); ?>" <?php selected($payaman_wishlist_current_position, $payaman_wishlist_pos_value); ?>><?php echo esc_html($payaman_wishlist_pos_label); ?></option>
 					<?php endforeach; ?>
 				</select>
 				<p class="description"><?php esc_html_e('Control where the wishlist button is injected.', 'payaman_wishlist'); ?></p>

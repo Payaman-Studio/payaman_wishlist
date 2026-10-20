@@ -1,5 +1,9 @@
 <?php
 
+if (! defined('ABSPATH')) {
+	exit;
+}
+
 /**
  *  Update Payaman Wishlist Status
  */
@@ -18,7 +22,8 @@ function payaman_wishlist_migrate_guest_to_user($user_login, $user)
 		return;
 	}
 
-	$cookie_data = json_decode(wp_unslash($_COOKIE['payaman_wishlist_product']), true);
+	$raw_cookie  = sanitize_text_field(wp_unslash($_COOKIE['payaman_wishlist_product']));
+	$cookie_data = json_decode($raw_cookie, true);
 
 	if (! is_array($cookie_data) || empty($cookie_data)) {
 		return;
@@ -142,6 +147,7 @@ function payaman_wishlist_maybe_install_tables()
 function payaman_wishlist_maybe_run_migrations()
 {
 	global $wpdb;
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$items_table = payaman_wishlist_get_table_name('items');
 
 	// v2.1.0 — Add variation_id column for variable product support.
@@ -154,7 +160,6 @@ function payaman_wishlist_maybe_run_migrations()
 		)
 	);
 	if (empty($has_column)) {
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query("ALTER TABLE {$items_table} ADD COLUMN variation_id BIGINT(20) UNSIGNED NOT NULL DEFAULT 0 AFTER product_id");
 	}
 
@@ -177,15 +182,12 @@ function payaman_wishlist_maybe_run_migrations()
 				)
 			);
 			if (empty($exists)) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->query($sql);
 			}
 		}
 
 		// Fix existing scheduled_at values that have 'T' format from browser datetime-local.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query("UPDATE {$campaigns_table} SET scheduled_at = REPLACE(scheduled_at, 'T', ' ') WHERE scheduled_at LIKE '%T%'");
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query("UPDATE {$campaigns_table} SET scheduled_at = CONCAT(scheduled_at, ':00') WHERE scheduled_at IS NOT NULL AND LENGTH(scheduled_at) = 16 AND scheduled_at NOT LIKE '%:%:%'");
 	}
 
@@ -212,10 +214,10 @@ function payaman_wishlist_maybe_run_migrations()
 	}
 	foreach ($required_indexes as $name => $sql) {
 		if (! in_array($name, $existing_index_names, true)) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->query($sql);
 		}
 	}
+	// phpcs:enable
 	$installed_version = get_option('payaman_wishlist_db_version');
 	if ($installed_version !== '2.4.0') {
 		update_option('payaman_wishlist_db_version', '2.4.0');
@@ -247,13 +249,11 @@ function payaman_wishlist_client_ip()
 }
 
 /**
- * get payaman_wishlist count by product_id
+ * Get payaman_wishlist count by product_id
  *
  * @param int $product_id ID Product
- *
- * @version 1.0.0
  */
-function get_payaman_wishlist($product_id)
+function payaman_wishlist_get_count($product_id)
 {
 	$product_id = absint($product_id);
 	if (! $product_id) {
@@ -263,14 +263,31 @@ function get_payaman_wishlist($product_id)
 	global $wpdb;
 	$items_table = payaman_wishlist_get_table_name('items');
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$count = $wpdb->get_var(
 		$wpdb->prepare(
 			"SELECT COUNT(*) FROM {$items_table} WHERE product_id = %d",
 			$product_id
 		)
 	);
+	// phpcs:enable
 
 	return $count ? (int) $count : '';
+}
+
+if (! function_exists('get_payaman_wishlist')) {
+	/**
+	 * Backwards compatibility helper.
+	 *
+	 * @deprecated Use payaman_wishlist_get_count() instead.
+	 * @param int $product_id
+	 * @return int|string
+	 */
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+	function get_payaman_wishlist($product_id)
+	{
+		return payaman_wishlist_get_count($product_id);
+	}
 }
 
 /**
@@ -346,6 +363,7 @@ function payaman_wishlist_get_public_collection($slug)
 		return null;
 	}
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$row = $wpdb->get_row(
 		$wpdb->prepare(
 			"SELECT * FROM {$collections_table} WHERE slug = %s AND is_public = 1 LIMIT 1",
@@ -364,6 +382,7 @@ function payaman_wishlist_get_public_collection($slug)
 			(int) $row['id']
 		)
 	);
+	// phpcs:enable
 
 	return array(
 		'id'          => $row['slug'],
@@ -553,13 +572,15 @@ function payaman_wishlist_get_user_wishlists_list($user_id, $collection_identifi
 
 	global $wpdb;
 	$items_table = payaman_wishlist_get_table_name('items');
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$placeholders = implode(',', array_fill(0, count($collection_ids), '%d'));
-	$query = $wpdb->prepare(
-		"SELECT DISTINCT product_id FROM {$items_table} WHERE collection_id IN ({$placeholders})",
-		$collection_ids
+	$product_ids  = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT DISTINCT product_id FROM {$items_table} WHERE collection_id IN ({$placeholders})",
+			$collection_ids
+		)
 	);
-
-	$product_ids = $wpdb->get_col($query);
+	// phpcs:enable
 	return array_values(array_unique(array_map('absint', (array) $product_ids)));
 }
 
@@ -591,6 +612,7 @@ function payaman_wishlist_get_default_collection($user_id, $create_if_missing = 
 	if (! $user_id) {
 		return null;
 	}
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$row = $wpdb->get_row(
 		$wpdb->prepare(
 			"SELECT * FROM {$collections_table} WHERE user_id = %d AND is_default = 1 LIMIT 1",
@@ -598,6 +620,7 @@ function payaman_wishlist_get_default_collection($user_id, $create_if_missing = 
 		),
 		ARRAY_A
 	);
+	// phpcs:enable
 	if ($row) {
 		return array(
 			'db_id'      => (int) $row['id'],
@@ -637,6 +660,7 @@ function payaman_wishlist_insert_collection($user_id, $name, $is_public = false,
 		$slug = wp_generate_uuid4();
 	}
 	$now = current_time('mysql');
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	$wpdb->insert(
 		$collections_table,
 		array(
@@ -651,6 +675,7 @@ function payaman_wishlist_insert_collection($user_id, $name, $is_public = false,
 		array('%d', '%s', '%s', '%d', '%d', '%s', '%s')
 	);
 	$insert_id = $wpdb->insert_id;
+	// phpcs:enable
 	return array(
 		'db_id'      => $insert_id,
 		'id'         => $slug,
@@ -671,6 +696,7 @@ function payaman_wishlist_get_user_collections($user_id, $ensure_default = false
 	}
 	$collections_table = payaman_wishlist_get_table_name('collections');
 	$items_table = payaman_wishlist_get_table_name('items');
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$rows = $wpdb->get_results(
 		$wpdb->prepare(
 			"SELECT * FROM {$collections_table} WHERE user_id = %d ORDER BY is_default DESC, id ASC",
@@ -689,6 +715,7 @@ function payaman_wishlist_get_user_collections($user_id, $ensure_default = false
 		);
 	}
 	if (empty($rows)) {
+		// phpcs:enable
 		return array();
 	}
 	$collection_ids = array_map(function ($row) {
@@ -697,11 +724,15 @@ function payaman_wishlist_get_user_collections($user_id, $ensure_default = false
 	$items_map = array();
 	if (! empty($collection_ids)) {
 		$placeholders = implode(',', array_fill(0, count($collection_ids), '%d'));
-		$query = $wpdb->prepare(
-			"SELECT collection_id, product_id FROM {$items_table} WHERE collection_id IN ({$placeholders})",
-			$collection_ids
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$items = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT collection_id, product_id FROM {$items_table} WHERE collection_id IN ({$placeholders})",
+				$collection_ids
+			),
+			ARRAY_A
 		);
-		$items = $wpdb->get_results($query, ARRAY_A);
+		// phpcs:enable
 		foreach ($items as $item) {
 			$key = (int) $item['collection_id'];
 			if (! isset($items_map[$key])) {
@@ -710,6 +741,7 @@ function payaman_wishlist_get_user_collections($user_id, $ensure_default = false
 			$items_map[$key][] = (int) $item['product_id'];
 		}
 	}
+	// phpcs:enable
 	$collections = array();
 	foreach ($rows as $row) {
 		$db_id = (int) $row['id'];
@@ -736,6 +768,7 @@ function payaman_wishlist_get_collection_record($user_id, $identifier, $fallback
 	$collections_table = payaman_wishlist_get_table_name('collections');
 	$row = null;
 	if ($identifier) {
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		if (is_numeric($identifier)) {
 			$row = $wpdb->get_row(
 				$wpdb->prepare(
@@ -756,6 +789,7 @@ function payaman_wishlist_get_collection_record($user_id, $identifier, $fallback
 				ARRAY_A
 			);
 		}
+		// phpcs:enable
 	}
 	if (! $row) {
 		return $fallback_to_default ? payaman_wishlist_get_default_collection($user_id, true) : null;
@@ -794,6 +828,7 @@ function payaman_wishlist_update_user_wishlists($user_id, $product_id, $fav_acti
 	}
 	$collection_db_id = (int) $collection['db_id'];
 	$items_table = payaman_wishlist_get_table_name('items');
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	if ('insert' === $fav_action) {
 		$exists = $wpdb->get_var(
 			$wpdb->prepare(
@@ -841,6 +876,7 @@ function payaman_wishlist_update_user_wishlists($user_id, $product_id, $fav_acti
 			$product_id
 		)
 	);
+	// phpcs:enable
 	return $user_still_has_product;
 }
 
@@ -854,6 +890,7 @@ function payaman_wishlist_remove_product_from_user($user_id, $product_id)
 	}
 	$items_table      = payaman_wishlist_get_table_name('items');
 	$collections_table = payaman_wishlist_get_table_name('collections');
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$collections = $wpdb->get_col(
 		$wpdb->prepare(
 			"SELECT id FROM {$collections_table} WHERE user_id = %d",
@@ -872,6 +909,7 @@ function payaman_wishlist_remove_product_from_user($user_id, $product_id)
 		);
 		$deleted = $deleted_rows > 0;
 	}
+	// phpcs:enable
 	$wishlists = array_values(
 		array_filter(
 			payaman_wishlist_get_wishlists($product_id),
@@ -930,7 +968,9 @@ function payaman_wishlist_update_collection($user_id, $collection_id, $args = ar
 	if (! empty($data)) {
 		$data['updated_at'] = current_time('mysql');
 		$formats[] = '%s';
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update(payaman_wishlist_get_table_name('collections'), $data, $where, $formats, $where_formats);
+		// phpcs:enable
 	}
 	return payaman_wishlist_get_collection_record($user_id, $record['id'], true);
 }
@@ -954,6 +994,7 @@ function payaman_wishlist_delete_collection($user_id, $collection_id, $target_co
 		$target = payaman_wishlist_get_default_collection($user_id, true);
 	}
 	$items_table = payaman_wishlist_get_table_name('items');
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	$wpdb->update(
 		$items_table,
 		array('collection_id' => $target['db_id']),
@@ -967,6 +1008,7 @@ function payaman_wishlist_delete_collection($user_id, $collection_id, $target_co
 		array('id' => $collection['db_id']),
 		array('%d')
 	);
+	// phpcs:enable
 	return array(
 		'target_id' => $target['id'],
 		'moved'     => $moved,
@@ -995,6 +1037,7 @@ function payaman_wishlist_move_items_between_collections($user_id, array $produc
 	} else {
 		$source_db_id = 0;
 	}
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	if ($source_db_id) {
 		$wpdb->query(
 			$wpdb->prepare(
@@ -1003,10 +1046,11 @@ function payaman_wishlist_move_items_between_collections($user_id, array $produc
 			)
 		);
 	} else {
+		$collections_table = payaman_wishlist_get_table_name('collections');
 		foreach ($product_ids as $product_id) {
 			$wpdb->query(
 				$wpdb->prepare(
-					"DELETE FROM {$items_table} WHERE product_id = %d AND collection_id IN (SELECT id FROM " . payaman_wishlist_get_table_name('collections') . " WHERE user_id = %d)",
+					"DELETE FROM {$items_table} WHERE product_id = %d AND collection_id IN (SELECT id FROM {$collections_table} WHERE user_id = %d)",
 					$product_id,
 					$user_id
 				)
@@ -1024,6 +1068,7 @@ function payaman_wishlist_move_items_between_collections($user_id, array $produc
 			array('%d', '%d', '%s')
 		);
 	}
+	// phpcs:enable
 	return payaman_wishlist_get_collection_record($user_id, $target['id'], true);
 }
 
@@ -1047,11 +1092,15 @@ function payaman_wishlist_prepare_collections_response($user_id)
 	if (! empty($collection_ids)) {
 		$ids = array_keys($collection_ids);
 		$placeholders = implode(',', array_fill(0, count($ids), '%d'));
-		$query = $wpdb->prepare(
-			"SELECT collection_id, COUNT(*) as total FROM {$items_table} WHERE collection_id IN ({$placeholders}) GROUP BY collection_id",
-			$ids
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT collection_id, COUNT(*) as total FROM {$items_table} WHERE collection_id IN ({$placeholders}) GROUP BY collection_id",
+				$ids
+			),
+			ARRAY_A
 		);
-		$results = $wpdb->get_results($query, ARRAY_A);
+		// phpcs:enable
 		foreach ($results as $row) {
 			$counts[(int) $row['collection_id']] = (int) $row['total'];
 		}
@@ -1078,6 +1127,7 @@ function payaman_wishlist_get_collection_for_product($user_id, $product_id)
 	}
 	$items_table = payaman_wishlist_get_table_name('items');
 	$collections_table = payaman_wishlist_get_table_name('collections');
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$slug = $wpdb->get_var(
 		$wpdb->prepare(
 			"SELECT col.slug FROM {$items_table} AS items INNER JOIN {$collections_table} AS col ON col.id = items.collection_id WHERE col.user_id = %d AND items.product_id = %d LIMIT 1",
@@ -1085,6 +1135,7 @@ function payaman_wishlist_get_collection_for_product($user_id, $product_id)
 			$product_id
 		)
 	);
+	// phpcs:enable
 	if ($slug) {
 		return $slug;
 	}
@@ -1116,6 +1167,7 @@ function payaman_wishlist_migrate_user_collections($user_id)
 		if (! empty($items)) {
 			global $wpdb;
 			$items_table = payaman_wishlist_get_table_name('items');
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			foreach ($items as $product_id) {
 				$product_id = absint($product_id);
 				if (! $product_id) {
@@ -1131,6 +1183,7 @@ function payaman_wishlist_migrate_user_collections($user_id)
 					array('%d', '%d', '%s')
 				);
 			}
+			// phpcs:enable
 		}
 	}
 	delete_user_meta($user_id, 'payaman_wishlist_collections');
@@ -1148,12 +1201,15 @@ function payaman_wishlist_fetch_legacy_user_products($user_id)
 		return array_values(array_unique(array_map('absint', $products)));
 	}
 	global $wpdb;
-	$payaman_wishlist_prepare = $wpdb->prepare(
-		"SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value LIKE %s",
-		'payaman_wishlist',
-		'%,' . $wpdb->esc_like($user_id) . ',%'
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$product_ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value LIKE %s",
+			'payaman_wishlist',
+			'%,' . $wpdb->esc_like($user_id) . ',%'
+		)
 	);
-	$product_ids = $wpdb->get_col($payaman_wishlist_prepare);
+	// phpcs:enable
 	$product_ids = array_values(array_unique(array_map('absint', (array) $product_ids)));
 	if (! empty($product_ids)) {
 		update_user_meta($user_id, 'payaman_wishlist_products', $product_ids);

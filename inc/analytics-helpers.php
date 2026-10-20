@@ -20,7 +20,8 @@ function payaman_wishlist_get_top_products($limit = 10)
 {
 	global $wpdb;
 	$items_table = payaman_wishlist_get_table_name('items');
-	
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$results = $wpdb->get_results(
 		$wpdb->prepare(
 			"SELECT product_id, COUNT(*) as wishlist_count 
@@ -32,6 +33,7 @@ function payaman_wishlist_get_top_products($limit = 10)
 		),
 		ARRAY_A
 	);
+	// phpcs:enable
 
 	if (empty($results)) {
 		return array();
@@ -66,9 +68,11 @@ function payaman_wishlist_get_stats()
 	$items_table       = payaman_wishlist_get_table_name('items');
 	$collections_table = payaman_wishlist_get_table_name('collections');
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$total_items       = $wpdb->get_var("SELECT COUNT(*) FROM {$items_table}");
 	$total_collections = $wpdb->get_var("SELECT COUNT(*) FROM {$collections_table}");
 	$total_users       = $wpdb->get_var("SELECT COUNT(DISTINCT user_id) FROM {$collections_table} WHERE user_id > 0");
+	// phpcs:enable
 
 	return array(
 		'total_items'       => (int) $total_items,
@@ -90,6 +94,7 @@ function payaman_wishlist_user_has_product($user_id, $product_id)
 	$items_table       = payaman_wishlist_get_table_name('items');
 	$collections_table = payaman_wishlist_get_table_name('collections');
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$found = $wpdb->get_var(
 		$wpdb->prepare(
 			"SELECT COUNT(*) FROM {$items_table} i
@@ -99,6 +104,7 @@ function payaman_wishlist_user_has_product($user_id, $product_id)
 			$product_id
 		)
 	);
+	// phpcs:enable
 
 	return (bool) $found;
 }
@@ -115,6 +121,7 @@ function payaman_wishlist_get_users_by_product($product_id)
 	$items_table       = payaman_wishlist_get_table_name('items');
 	$collections_table = payaman_wishlist_get_table_name('collections');
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 	$results = $wpdb->get_col(
 		$wpdb->prepare(
 			"SELECT DISTINCT c.user_id 
@@ -124,6 +131,7 @@ function payaman_wishlist_get_users_by_product($product_id)
 			$product_id
 		)
 	);
+	// phpcs:enable
 
 	return array_map('absint', $results);
 }

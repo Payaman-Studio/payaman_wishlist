@@ -8,6 +8,7 @@ if (! class_exists('Payaman_Wishlist_Campaigns')) {
 
 	class Payaman_Wishlist_Campaigns
 	{
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared
 		private $table;
 
 		public function __construct()
@@ -457,16 +458,17 @@ if (! class_exists('Payaman_Wishlist_Campaigns')) {
 		}
 
 		$placeholders = implode(',', array_fill(0, count($product_ids), '%d'));
-		$query = $wpdb->prepare(
-			"SELECT DISTINCT i.product_id FROM {$items_table} i
-			 INNER JOIN {$collections_table} c ON c.id = i.collection_id
-			 WHERE c.user_id = %d AND i.product_id IN ({$placeholders})",
-			array_merge(array($user_id), $product_ids)
+		$results = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT i.product_id FROM {$items_table} i
+				 INNER JOIN {$collections_table} c ON c.id = i.collection_id
+				 WHERE c.user_id = %d AND i.product_id IN ({$placeholders})",
+				array_merge(array($user_id), $product_ids)
+			)
 		);
-
-		$results = $wpdb->get_col($query);
 		return array_values(array_unique(array_map('absint', $results)));
 	}
+	// phpcs:enable
 
 	new Payaman_Wishlist_Campaigns();
 }

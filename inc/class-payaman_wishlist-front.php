@@ -61,6 +61,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 				$items_table = payaman_wishlist_get_table_name('items');
 				$collections_table = payaman_wishlist_get_table_name('collections');
 
+				// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 				$wpdb->query(
 					$wpdb->prepare(
 						"DELETE i FROM {$items_table} i 
@@ -70,6 +71,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 						$product_id
 					)
 				);
+				// phpcs:enable
 
 				// Also sync to legacy post meta
 				$wishlists = payaman_wishlist_get_wishlists($product_id);
@@ -81,7 +83,8 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			} else {
 				// For Guests (Cookie based)
 				if (isset($_COOKIE['payaman_wishlist_product'])) {
-					$cookie_data = json_decode(wp_unslash($_COOKIE['payaman_wishlist_product']), true);
+					$raw_cookie = sanitize_text_field(wp_unslash($_COOKIE['payaman_wishlist_product']));
+					$cookie_data = json_decode($raw_cookie, true);
 					if (is_array($cookie_data)) {
 						$product_id_str = (string) $product_id;
 						if (($key = array_search($product_id_str, $cookie_data)) !== false) {
@@ -248,7 +251,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			);
 
 			wp_enqueue_style('payaman_wishlist-style', PAYAMAN_WISHLIST_URL . '/assets/css/payaman_wishlist-style.css', array(), PAYAMAN_WISHLIST_VERSION);
-			wp_enqueue_script('payaman_wishlist-script', PAYAMAN_WISHLIST_URL . '/assets/js/payaman_wishlist-script.js', array('jquery', 'js-cookie'), PAYAMAN_WISHLIST_VERSION, true);
+			wp_enqueue_script('payaman_wishlist-script', PAYAMAN_WISHLIST_URL . '/assets/js/payaman_wishlist-script.js', array('jquery', 'js-cookie'), PAYAMAN_WISHLIST_VERSION, array('strategy' => 'defer', 'in_footer' => true));
 			wp_localize_script('payaman_wishlist-script', 'payaman_wishlist_object', $payaman_wishlist_object);
 		}
 
@@ -298,7 +301,8 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			$current_collection_id = '';
 
 			if (isset($_COOKIE['payaman_wishlist_product'])) {
-				$cookie_payaman_wishlist = json_decode(wp_unslash($_COOKIE['payaman_wishlist_product']), true);
+				$raw_cookie = sanitize_text_field(wp_unslash($_COOKIE['payaman_wishlist_product']));
+				$cookie_payaman_wishlist = json_decode($raw_cookie, true);
 				$cookie_payaman_wishlist = is_array($cookie_payaman_wishlist) ? array_map('absint', $cookie_payaman_wishlist) : array();
 			}
 
@@ -313,7 +317,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			$payaman_wishlist_count  = '';
 
 			if ('yes' === payaman_wishlist_setting('payaman_wishlist_count', 'no')) {
-				$count_payaman_wishlist = (int) get_payaman_wishlist($product_id);
+				$count_payaman_wishlist = (int) payaman_wishlist_get_count($product_id);
 				if ('text' === $button_type) {
 					$payaman_wishlist_count = ' (' . esc_html($count_payaman_wishlist) . ')';
 				} else {
@@ -401,6 +405,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 				'payaman_wishlist_list'
 			);
 
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$active_collection = isset($_GET['collection']) ? sanitize_text_field(wp_unslash($_GET['collection'])) : sanitize_text_field($atts['collection']);
 
 			if (is_user_logged_in() && empty($active_collection)) {
@@ -408,8 +413,8 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			}
 
 			$per_page = PAYAMAN_WISHLIST_ITEMS_PER_PAGE;
-			$paged    = isset($_GET['paged']) ? max(1, absint($_GET['paged'])) : 1;
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$paged    = isset($_GET['paged']) ? max(1, absint($_GET['paged'])) : 1;
 
 			$list_wishlist = array();
 
@@ -440,6 +445,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 					if ($products->have_posts()) {
 						echo '<p class="payaman_wishlist-shared-notice">'
 							. sprintf(
+								/* translators: %s: collection name */
 								esc_html__('Shared collection: %s', 'payaman_wishlist'),
 								'<strong>' . esc_html($public_collection['name']) . '</strong>'
 							)
@@ -457,14 +463,15 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			}
 
 			if ('yes' === payaman_wishlist_setting('required_login', 'no') && ! is_user_logged_in()) {
-				echo apply_filters('woocommerce_checkout_must_be_logged_in_message', __('You must be logged in.', 'woocommerce'));
+				echo wp_kses_post(apply_filters('payaman_wishlist_must_be_logged_in_message', __('You must be logged in.', 'payaman_wishlist')));
 				return;
 			}
 
 			if (is_user_logged_in()) {
 				$list_wishlist = $this->get_wishlist_product_by_user(get_current_user_id(), $active_collection);
 			} elseif (isset($_COOKIE['payaman_wishlist_product'])) {
-				$cookie_payaman_wishlist = json_decode(wp_unslash($_COOKIE['payaman_wishlist_product']), true);
+				$raw_cookie = sanitize_text_field(wp_unslash($_COOKIE['payaman_wishlist_product']));
+				$cookie_payaman_wishlist = json_decode($raw_cookie, true);
 				if (is_array($cookie_payaman_wishlist)) {
 					$list_wishlist = array_map('absint', $cookie_payaman_wishlist);
 				}
@@ -528,7 +535,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			);
 
 			echo '<div class="payaman_wishlist-pagination">';
-			echo paginate_links($args);
+			echo wp_kses_post(paginate_links($args));
 			echo '</div>';
 		}
 
@@ -594,6 +601,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 
 				if ($active_col_data && ! empty($active_col_data['is_public']) && is_user_logged_in()) : 
 					$share_url = add_query_arg('share', $active_col_data['id'], payaman_wishlist_get_wishlist_page_url());
+					/* translators: 1: collection name, 2: share URL */
 					$wa_message = sprintf(__('Check out my wishlist: %1$s - %2$s', 'payaman_wishlist'), $active_col_data['name'], $share_url);
 					$wa_url = 'https://wa.me/?text=' . rawurlencode($wa_message);
 				?>

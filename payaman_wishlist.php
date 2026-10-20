@@ -2,13 +2,13 @@
 
 /**
  * Plugin Name: Payaman Wishlist
- * Plugin URI: https://payamanstudio.com/plugin/payaman-wishlist/
+ * Plugin URI: https://payamanstudio.com/plugin/payaman_wishlist/
  * Description: Payaman Wishlist for WooCommerce
  * Version: 1.0.2
  * Author: Payaman Studio
  * Author URI: https://payamanstudio.com/
- * Text Domain: payaman_wishlist
- * Domain Path: /lang
+ * Text Domain: payaman-wishlist
+ * Domain Path: /languages
  *
  * WC requires at least: 6.5.3
  * WC tested up to: 9.3.2
@@ -40,9 +40,9 @@ add_action(
 if (! class_exists('Payaman_Wishlist')) {
 
 	/**
-	 * Main Class Payaman_Wishlist
+	 * Main Class payaman_wishlist
 	 */
-	class Payaman_Wishlist
+	class payaman_wishlist
 	{
 
 		public $helpers;
@@ -54,8 +54,12 @@ if (! class_exists('Payaman_Wishlist')) {
 		 */
 		public function __construct()
 		{
+			$active_plugins = (array) get_option('active_plugins', array());
+			if (is_multisite()) {
+				$active_plugins = array_merge($active_plugins, array_keys((array) get_site_option('active_sitewide_plugins', array())));
+			}
 
-			if (! in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+			if (! in_array('woocommerce/woocommerce.php', $active_plugins, true) && ! class_exists('WooCommerce')) {
 				add_action(
 					'admin_notices',
 					function () {
@@ -188,7 +192,7 @@ if (! class_exists('Payaman_Wishlist')) {
 
 	public function process_scheduled_campaigns()
 	{
-		$campaigns = new Payaman_Wishlist_Campaigns();
+		$campaigns = new payaman_wishlist_Campaigns();
 		$campaigns->process_due();
 	}
 
@@ -208,8 +212,8 @@ if (! class_exists('Payaman_Wishlist')) {
 
 			if (in_array($page, $payamanstudio_pages, true)) {
 				wp_enqueue_style('wp-color-picker');
-				wp_enqueue_style('payamanstudio-admin-style', PAYAMAN_WISHLIST_URL . '/assets/css/payamanstudio-admin.css', array(), PAYAMAN_WISHLIST_VERSION);
-				wp_enqueue_script('payaman_wishlist-admin-script', PAYAMAN_WISHLIST_URL . '/assets/js/payaman_wishlist-admin-script.js', array('jquery', 'wp-color-picker'), PAYAMAN_WISHLIST_VERSION, true);
+				wp_enqueue_style('payamanstudio-admin-style', payaman_wishlist_URL . '/assets/css/payamanstudio-admin.css', array(), payaman_wishlist_VERSION);
+				wp_enqueue_script('payaman_wishlist-admin-script', payaman_wishlist_URL . '/assets/js/payaman_wishlist-admin-script.js', array('jquery', 'wp-color-picker'), payaman_wishlist_VERSION, true);
 				wp_enqueue_editor();
 
 				if (class_exists('WooCommerce')) {
@@ -220,5 +224,5 @@ if (! class_exists('Payaman_Wishlist')) {
 		}
 	}
 
-	new Payaman_Wishlist();
+	new payaman_wishlist();
 }

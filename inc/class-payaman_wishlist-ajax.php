@@ -106,8 +106,8 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		{
 			check_ajax_referer('payaman_wishlist_bulk', 'nonce');
 
-			$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
-			$product_ids = array_values(array_unique(array_filter(array_map('absint', $product_ids))));
+			$product_ids = isset($_POST['product_ids']) && is_array($_POST['product_ids']) ? array_map('absint', wp_unslash($_POST['product_ids'])) : array();
+			$product_ids = array_values(array_unique(array_filter($product_ids)));
 			$collection_id = isset($_POST['collection_id']) ? sanitize_text_field(wp_unslash($_POST['collection_id'])) : '';
 
 			if (empty($product_ids)) {
@@ -165,8 +165,8 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			}
 
 			$user_id = get_current_user_id();
-			$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
-			$product_ids = array_values(array_unique(array_filter(array_map('absint', $product_ids))));
+			$product_ids = isset($_POST['product_ids']) && is_array($_POST['product_ids']) ? array_map('absint', wp_unslash($_POST['product_ids'])) : array();
+			$product_ids = array_values(array_unique(array_filter($product_ids)));
 
 			if (empty($product_ids)) {
 				wp_send_json_error(array('message' => __('No products selected.', 'payaman_wishlist')), 400);
@@ -256,7 +256,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 			$user_id   = get_current_user_id();
 			$name      = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
-			$is_public = ! empty($_POST['is_public']) && filter_var($_POST['is_public'], FILTER_VALIDATE_BOOLEAN);
+			$is_public = ! empty($_POST['is_public']) && filter_var(wp_unslash($_POST['is_public']), FILTER_VALIDATE_BOOLEAN);
 
 			$result = payaman_wishlist_create_collection($user_id, $name, $is_public);
 
@@ -281,7 +281,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			$user_id = get_current_user_id();
 			$collection_id = isset($_POST['collection_id']) ? sanitize_text_field(wp_unslash($_POST['collection_id'])) : '';
 			$name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
-			$is_public = isset($_POST['is_public']) ? filter_var($_POST['is_public'], FILTER_VALIDATE_BOOLEAN) : null;
+			$is_public = isset($_POST['is_public']) ? filter_var(wp_unslash($_POST['is_public']), FILTER_VALIDATE_BOOLEAN) : null;
 
 			$args = array();
 			if (! empty($name)) {
@@ -335,8 +335,8 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			}
 
 			$user_id = get_current_user_id();
-			$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
-			$product_ids = array_values(array_unique(array_filter(array_map('absint', $product_ids))));
+			$product_ids = isset($_POST['product_ids']) && is_array($_POST['product_ids']) ? array_map('absint', wp_unslash($_POST['product_ids'])) : array();
+			$product_ids = array_values(array_unique(array_filter($product_ids)));
 			$target_collection_id = isset($_POST['target_collection_id']) ? sanitize_text_field(wp_unslash($_POST['target_collection_id'])) : '';
 			$source_collection_id = isset($_POST['source_collection_id']) ? sanitize_text_field(wp_unslash($_POST['source_collection_id'])) : '';
 
@@ -366,7 +366,8 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		$name           = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
 		$subject        = isset($_POST['subject']) ? sanitize_text_field(wp_unslash($_POST['subject'])) : '';
 		$body           = isset($_POST['body']) ? wp_kses_post(wp_unslash($_POST['body'])) : '';
-		$product_ids    = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
+		$product_ids    = isset($_POST['product_ids']) && is_array($_POST['product_ids']) ? array_map('absint', wp_unslash($_POST['product_ids'])) : array();
+		$product_ids    = array_values(array_unique(array_filter($product_ids)));
 		$send_type      = isset($_POST['send_type']) ? sanitize_text_field(wp_unslash($_POST['send_type'])) : 'immediate';
 		$scheduled_at   = isset($_POST['scheduled_at']) ? sanitize_text_field(wp_unslash($_POST['scheduled_at'])) : '';
 		$repeat_interval = isset($_POST['repeat_interval']) ? sanitize_text_field(wp_unslash($_POST['repeat_interval'])) : '';
@@ -450,7 +451,8 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		$name        = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
 		$subject     = isset($_POST['subject']) ? sanitize_text_field(wp_unslash($_POST['subject'])) : '';
 		$body        = isset($_POST['body']) ? wp_kses_post(wp_unslash($_POST['body'])) : '';
-		$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
+		$product_ids = isset($_POST['product_ids']) && is_array($_POST['product_ids']) ? array_map('absint', wp_unslash($_POST['product_ids'])) : array();
+		$product_ids = array_values(array_unique(array_filter($product_ids)));
 		$send_type   = isset($_POST['send_type']) ? sanitize_text_field(wp_unslash($_POST['send_type'])) : 'immediate';
 		$scheduled_at = isset($_POST['scheduled_at']) ? sanitize_text_field(wp_unslash($_POST['scheduled_at'])) : '';
 		$repeat_interval = isset($_POST['repeat_interval']) ? sanitize_text_field(wp_unslash($_POST['repeat_interval'])) : '';
@@ -511,6 +513,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		}
 
 		$message = sprintf(
+			/* translators: 1: number of emails sent, 2: total targeted emails */
 			__('Campaign sent! %1$d of %2$d email(s) delivered.', 'payaman_wishlist'),
 			$result['sent'],
 			$result['targeted']
@@ -618,7 +621,8 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 		$subject     = isset($_POST['subject']) ? sanitize_text_field(wp_unslash($_POST['subject'])) : '';
 		$body        = isset($_POST['body']) ? wp_kses_post(wp_unslash($_POST['body'])) : '';
-		$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
+		$product_ids = isset($_POST['product_ids']) && is_array($_POST['product_ids']) ? array_map('absint', wp_unslash($_POST['product_ids'])) : array();
+		$product_ids = array_values(array_unique(array_filter($product_ids)));
 
 		$sample_products = array();
 		if (! empty($product_ids)) {
@@ -663,7 +667,8 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 		$subject     = isset($_POST['subject']) ? sanitize_text_field(wp_unslash($_POST['subject'])) : '';
 		$body        = isset($_POST['body']) ? wp_kses_post(wp_unslash($_POST['body'])) : '';
-		$product_ids = isset($_POST['product_ids']) ? (array) wp_unslash($_POST['product_ids']) : array();
+		$product_ids = isset($_POST['product_ids']) && is_array($_POST['product_ids']) ? array_map('absint', wp_unslash($_POST['product_ids'])) : array();
+		$product_ids = array_values(array_unique(array_filter($product_ids)));
 
 		if (! $subject || ! $body || empty($product_ids)) {
 			wp_send_json_error(array('message' => __('Please fill in all fields first.', 'payaman_wishlist')), 400);
@@ -720,6 +725,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		$results = $campaigns->process_due();
 
 		$total = count($results);
+		/* translators: %d: number of processed campaigns */
 		$message = sprintf(__('Processed %d scheduled campaign(s).', 'payaman_wishlist'), $total);
 
 		wp_send_json_success(array('message' => $message, 'results' => $results));

@@ -3,9 +3,9 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-$campaigns_obj = new Payaman_Wishlist_Campaigns();
-$campaigns = $campaigns_obj->get_all();
-$promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
+$payaman_wishlist_campaigns_obj = new Payaman_Wishlist_Campaigns();
+$payaman_wishlist_campaigns     = $payaman_wishlist_campaigns_obj->get_all();
+$payaman_wishlist_promo_nonce   = wp_create_nonce('payaman_wishlist_promo_email');
 ?>
 <div class="form-section" id="tab-promotional-email" style="display: none;">
 
@@ -44,50 +44,53 @@ $promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
             </tr>
         </thead>
         <tbody id="payaman_campaigns_tbody">
-            <?php if (! empty($campaigns)) : ?>
-                <?php foreach ($campaigns as $c) :
-                    $type_label = __('Immediate', 'payaman_wishlist');
-                    if ($c['send_type'] === 'scheduled') {
-                        $type_label = $c['repeat_interval']
-                            ? sprintf(__('Repeat %s', 'payaman_wishlist'), ucfirst($c['repeat_interval']))
-                            : __('Scheduled', 'payaman_wishlist');
+            <?php if (! empty($payaman_wishlist_campaigns)) : ?>
+                <?php foreach ($payaman_wishlist_campaigns as $payaman_wishlist_c) :
+                    $payaman_wishlist_type_label = __('Immediate', 'payaman_wishlist');
+                    if ($payaman_wishlist_c['send_type'] === 'scheduled') {
+                        if ($payaman_wishlist_c['repeat_interval']) {
+                            /* translators: %s: repeat interval (e.g. daily, weekly) */
+                            $payaman_wishlist_type_label = sprintf(__('Repeat %s', 'payaman_wishlist'), ucfirst($payaman_wishlist_c['repeat_interval']));
+                        } else {
+                            $payaman_wishlist_type_label = __('Scheduled', 'payaman_wishlist');
+                        }
                     }
                 ?>
-                    <tr data-campaign-id="<?php echo esc_attr($c['id']); ?>">
-                        <td><strong><?php echo esc_html($c['name']); ?></strong></td>
-                        <td><?php echo count($c['product_ids']); ?></td>
-                        <td><?php echo esc_html($type_label); ?></td>
+                    <tr data-campaign-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
+                        <td><strong><?php echo esc_html($payaman_wishlist_c['name']); ?></strong></td>
+                        <td><?php echo count($payaman_wishlist_c['product_ids']); ?></td>
+                        <td><?php echo esc_html($payaman_wishlist_type_label); ?></td>
                         <td>
-                                <?php if ($c['status'] === 'scheduled' && $c['scheduled_at']) : ?>
-                                    <?php echo esc_html(payaman_wishlist_utc_to_wp_timezone($c['scheduled_at'])); ?>
+                                <?php if ($payaman_wishlist_c['status'] === 'scheduled' && $payaman_wishlist_c['scheduled_at']) : ?>
+                                    <?php echo esc_html(payaman_wishlist_utc_to_wp_timezone($payaman_wishlist_c['scheduled_at'])); ?>
                                 <?php else : ?>
                                     &mdash;
                                 <?php endif; ?>
                             </td>
                         <td>
-                            <span class="badge" style="background: <?php echo $c['status'] === 'sent' ? '#46b450' : ($c['status'] === 'scheduled' ? '#0073aa' : ($c['status'] === 'paused' ? '#f0ad4e' : '#ccc')); ?>; color: #fff; padding: 2px 10px; border-radius: 10px;">
-                                <?php echo esc_html(ucfirst($c['status'])); ?>
+                            <span class="badge" style="background: <?php echo $payaman_wishlist_c['status'] === 'sent' ? '#46b450' : ($payaman_wishlist_c['status'] === 'scheduled' ? '#0073aa' : ($payaman_wishlist_c['status'] === 'paused' ? '#f0ad4e' : '#ccc')); ?>; color: #fff; padding: 2px 10px; border-radius: 10px;">
+                                <?php echo esc_html(ucfirst($payaman_wishlist_c['status'])); ?>
                             </span>
                         </td>
-                        <td><?php echo esc_html($c['total_sent']); ?>/<?php echo esc_html($c['total_targeted']); ?></td>
-                        <td><?php echo esc_html($c['created_at']); ?></td>
+                        <td><?php echo esc_html($payaman_wishlist_c['total_sent']); ?>/<?php echo esc_html($payaman_wishlist_c['total_targeted']); ?></td>
+                        <td><?php echo esc_html($payaman_wishlist_c['created_at']); ?></td>
                         <td class="payaman-actions">
-                            <button type="button" class="button payaman-btn-icon payaman-edit-campaign" title="<?php esc_attr_e('Edit', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($c['id']); ?>">
+                            <button type="button" class="button payaman-btn-icon payaman-edit-campaign" title="<?php esc_attr_e('Edit', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                 <span class="dashicons dashicons-edit"></span>
                             </button>
-                            <?php if ($c['status'] === 'scheduled') : ?>
-                                <button type="button" class="button payaman-btn-icon payaman-pause-campaign" title="<?php esc_attr_e('Pause', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($c['id']); ?>">
+                            <?php if ($payaman_wishlist_c['status'] === 'scheduled') : ?>
+                                <button type="button" class="button payaman-btn-icon payaman-pause-campaign" title="<?php esc_attr_e('Pause', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                     <span class="dashicons dashicons-controls-pause"></span>
                                 </button>
-                            <?php elseif ($c['status'] === 'paused') : ?>
-                                <button type="button" class="button payaman-btn-icon payaman-resume-campaign" title="<?php esc_attr_e('Resume', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($c['id']); ?>">
+                            <?php elseif ($payaman_wishlist_c['status'] === 'paused') : ?>
+                                <button type="button" class="button payaman-btn-icon payaman-resume-campaign" title="<?php esc_attr_e('Resume', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                     <span class="dashicons dashicons-controls-play"></span>
                                 </button>
                             <?php endif; ?>
-                            <button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php esc_attr_e('Send Now', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($c['id']); ?>">
+                            <button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php esc_attr_e('Send Now', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                 <span class="dashicons dashicons-email-alt"></span>
                             </button>
-                            <button type="button" class="button payaman-btn-icon payaman-delete-campaign" title="<?php esc_attr_e('Delete', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($c['id']); ?>">
+                            <button type="button" class="button payaman-btn-icon payaman-delete-campaign" title="<?php esc_attr_e('Delete', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                 <span class="dashicons dashicons-trash"></span>
                             </button>
                             <span class="campaign-loading" style="display:none;"><span class="spinner is-active"></span></span>
@@ -295,7 +298,7 @@ $promo_nonce = wp_create_nonce('payaman_wishlist_promo_email');
 
 <script>
 jQuery(function($) {
-    var promoNonce = '<?php echo esc_js($promo_nonce); ?>';
+    var promoNonce = '<?php echo esc_js($payaman_promo_nonce); ?>';
     var $status = $('#payaman_promo_status');
 
     function showStatus(msg, type) {
