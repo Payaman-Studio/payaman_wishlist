@@ -135,7 +135,7 @@ if (! class_exists('Payaman_Wishlist_Admin_Page')) {
 		 */
 		public function render_payamanstudio_dashboard()
 		{
-			echo '<div class="wrap payamanstudio-admin"><h1>' . esc_html__('Payaman Studio', 'payaman-wishlist') . '</h1><p>' . esc_html__('Select a plugin from the submenu to manage its settings.', 'payaman-wishlist') . '</p></div>';
+			include_once PAYAMAN_WISHLIST_PATH . 'views/admin/dashboard-payamanstudio.php';
 		}
 	}
 

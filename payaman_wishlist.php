@@ -212,8 +212,8 @@ if (! class_exists('Payaman_Wishlist')) {
 
 			if (in_array($page, $payamanstudio_pages, true)) {
 				wp_enqueue_style('wp-color-picker');
-				wp_enqueue_style('payamanstudio-admin-style', payaman_wishlist_URL . '/assets/css/payamanstudio-admin.css', array(), payaman_wishlist_VERSION);
-				wp_enqueue_script('payaman_wishlist-admin-script', payaman_wishlist_URL . '/assets/js/payaman_wishlist-admin-script.js', array('jquery', 'wp-color-picker'), payaman_wishlist_VERSION, true);
+				wp_enqueue_style('payamanstudio-admin-style', PAYAMAN_WISHLIST_URL . '/assets/css/payamanstudio-admin.css', array(), PAYAMAN_WISHLIST_VERSION);
+				wp_enqueue_script('payaman_wishlist-admin-script', PAYAMAN_WISHLIST_URL . '/assets/js/payaman_wishlist-admin-script.js', array('jquery', 'wp-color-picker'), PAYAMAN_WISHLIST_VERSION, true);
 				wp_enqueue_editor();
 
 				if (class_exists('WooCommerce')) {
