@@ -64,7 +64,7 @@ if (! class_exists('Payaman_Wishlist')) {
 					'admin_notices',
 					function () {
 						$class   = 'notice notice-error';
-						$message = __('WooCommerce needs to be installed and activated to use "Payaman Wishlist"', 'payaman_wishlist');
+						$message = __('WooCommerce needs to be installed and activated to use "Payaman Wishlist"', 'payaman-wishlist');
 
 						printf('<div class="%1$s"><p>%2$s</p></div>', esc_attr($class), esc_html($message));
 					}
@@ -168,7 +168,7 @@ if (! class_exists('Payaman_Wishlist')) {
 		 */
 		public function plugin_add_settings_link($links)
 		{
-			$settings_link = '<a href="' . admin_url('admin.php?page=payaman_wishlist') . '">' . __('Settings', 'payaman_wishlist') . '</a>';
+			$settings_link = '<a href="' . admin_url('admin.php?page=payaman_wishlist') . '">' . __('Settings', 'payaman-wishlist') . '</a>';
 			array_push($links, $settings_link);
 			return $links;
 		}
@@ -185,7 +185,7 @@ if (! class_exists('Payaman_Wishlist')) {
 	{
 		$schedules['payaman_wishlist_every_minute'] = array(
 			'interval' => 60,
-			'display'  => __('Every Minute', 'payaman_wishlist'),
+			'display'  => __('Every Minute', 'payaman-wishlist'),
 		);
 		return $schedules;
 	}

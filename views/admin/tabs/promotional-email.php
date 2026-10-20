@@ -12,18 +12,18 @@ $payaman_wishlist_promo_nonce   = wp_create_nonce('payaman_wishlist_promo_email'
 <div id="promo-sub-campaigns">
 
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2><?php esc_html_e('Email Campaigns', 'payaman_wishlist'); ?></h2>
+        <h2><?php esc_html_e('Email Campaigns', 'payaman-wishlist'); ?></h2>
         <div style="display: flex; gap: 6px; align-items: center;">
             <button type="button" id="payaman_process_due" class="button">
-                <?php esc_html_e('Process Scheduled', 'payaman_wishlist'); ?>
+                <?php esc_html_e('Process Scheduled', 'payaman-wishlist'); ?>
             </button>
             <span id="payaman_process_loading" style="display:none;"><span class="spinner is-active"></span></span>
-            <button type="button" id="payaman_refresh_table" class="button" title="<?php esc_attr_e('Refresh table', 'payaman_wishlist'); ?>">
-                &#x21bb; <?php esc_html_e('Refresh', 'payaman_wishlist'); ?>
+            <button type="button" id="payaman_refresh_table" class="button" title="<?php esc_attr_e('Refresh table', 'payaman-wishlist'); ?>">
+                &#x21bb; <?php esc_html_e('Refresh', 'payaman-wishlist'); ?>
             </button>
             <span id="payaman_refresh_loading" style="display:none;"><span class="spinner is-active"></span></span>
             <button type="button" id="payaman_new_campaign" class="button button-primary">
-                <?php esc_html_e('New Campaign', 'payaman_wishlist'); ?>
+                <?php esc_html_e('New Campaign', 'payaman-wishlist'); ?>
             </button>
         </div>
     </div>
@@ -33,26 +33,26 @@ $payaman_wishlist_promo_nonce   = wp_create_nonce('payaman_wishlist_promo_email'
     <table class="wp-list-table widefat fixed striped">
         <thead>
             <tr>
-                <th><?php esc_html_e('Campaign', 'payaman_wishlist'); ?></th>
-                <th><?php esc_html_e('Products', 'payaman_wishlist'); ?></th>
-                <th><?php esc_html_e('Type', 'payaman_wishlist'); ?></th>
-                <th><?php esc_html_e('Next Send', 'payaman_wishlist'); ?></th>
-                <th><?php esc_html_e('Status', 'payaman_wishlist'); ?></th>
-                <th><?php esc_html_e('Sent', 'payaman_wishlist'); ?></th>
-                <th><?php esc_html_e('Created', 'payaman_wishlist'); ?></th>
-                <th><?php esc_html_e('Actions', 'payaman_wishlist'); ?></th>
+                <th><?php esc_html_e('Campaign', 'payaman-wishlist'); ?></th>
+                <th><?php esc_html_e('Products', 'payaman-wishlist'); ?></th>
+                <th><?php esc_html_e('Type', 'payaman-wishlist'); ?></th>
+                <th><?php esc_html_e('Next Send', 'payaman-wishlist'); ?></th>
+                <th><?php esc_html_e('Status', 'payaman-wishlist'); ?></th>
+                <th><?php esc_html_e('Sent', 'payaman-wishlist'); ?></th>
+                <th><?php esc_html_e('Created', 'payaman-wishlist'); ?></th>
+                <th><?php esc_html_e('Actions', 'payaman-wishlist'); ?></th>
             </tr>
         </thead>
         <tbody id="payaman_campaigns_tbody">
             <?php if (! empty($payaman_wishlist_campaigns)) : ?>
                 <?php foreach ($payaman_wishlist_campaigns as $payaman_wishlist_c) :
-                    $payaman_wishlist_type_label = __('Immediate', 'payaman_wishlist');
+                    $payaman_wishlist_type_label = __('Immediate', 'payaman-wishlist');
                     if ($payaman_wishlist_c['send_type'] === 'scheduled') {
                         if ($payaman_wishlist_c['repeat_interval']) {
                             /* translators: %s: repeat interval (e.g. daily, weekly) */
-                            $payaman_wishlist_type_label = sprintf(__('Repeat %s', 'payaman_wishlist'), ucfirst($payaman_wishlist_c['repeat_interval']));
+                            $payaman_wishlist_type_label = sprintf(__('Repeat %s', 'payaman-wishlist'), ucfirst($payaman_wishlist_c['repeat_interval']));
                         } else {
-                            $payaman_wishlist_type_label = __('Scheduled', 'payaman_wishlist');
+                            $payaman_wishlist_type_label = __('Scheduled', 'payaman-wishlist');
                         }
                     }
                 ?>
@@ -75,22 +75,22 @@ $payaman_wishlist_promo_nonce   = wp_create_nonce('payaman_wishlist_promo_email'
                         <td><?php echo esc_html($payaman_wishlist_c['total_sent']); ?>/<?php echo esc_html($payaman_wishlist_c['total_targeted']); ?></td>
                         <td><?php echo esc_html($payaman_wishlist_c['created_at']); ?></td>
                         <td class="payaman-actions">
-                            <button type="button" class="button payaman-btn-icon payaman-edit-campaign" title="<?php esc_attr_e('Edit', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
+                            <button type="button" class="button payaman-btn-icon payaman-edit-campaign" title="<?php esc_attr_e('Edit', 'payaman-wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                 <span class="dashicons dashicons-edit"></span>
                             </button>
                             <?php if ($payaman_wishlist_c['status'] === 'scheduled') : ?>
-                                <button type="button" class="button payaman-btn-icon payaman-pause-campaign" title="<?php esc_attr_e('Pause', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
+                                <button type="button" class="button payaman-btn-icon payaman-pause-campaign" title="<?php esc_attr_e('Pause', 'payaman-wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                     <span class="dashicons dashicons-controls-pause"></span>
                                 </button>
                             <?php elseif ($payaman_wishlist_c['status'] === 'paused') : ?>
-                                <button type="button" class="button payaman-btn-icon payaman-resume-campaign" title="<?php esc_attr_e('Resume', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
+                                <button type="button" class="button payaman-btn-icon payaman-resume-campaign" title="<?php esc_attr_e('Resume', 'payaman-wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                     <span class="dashicons dashicons-controls-play"></span>
                                 </button>
                             <?php endif; ?>
-                            <button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php esc_attr_e('Send Now', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
+                            <button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php esc_attr_e('Send Now', 'payaman-wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                 <span class="dashicons dashicons-email-alt"></span>
                             </button>
-                            <button type="button" class="button payaman-btn-icon payaman-delete-campaign" title="<?php esc_attr_e('Delete', 'payaman_wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
+                            <button type="button" class="button payaman-btn-icon payaman-delete-campaign" title="<?php esc_attr_e('Delete', 'payaman-wishlist'); ?>" data-id="<?php echo esc_attr($payaman_wishlist_c['id']); ?>">
                                 <span class="dashicons dashicons-trash"></span>
                             </button>
                             <span class="campaign-loading" style="display:none;"><span class="spinner is-active"></span></span>
@@ -99,7 +99,7 @@ $payaman_wishlist_promo_nonce   = wp_create_nonce('payaman_wishlist_promo_email'
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr id="payaman_no_campaigns">
-                    <td colspan="8"><?php esc_html_e('No campaigns yet.', 'payaman_wishlist'); ?></td>
+                    <td colspan="8"><?php esc_html_e('No campaigns yet.', 'payaman-wishlist'); ?></td>
                 </tr>
             <?php endif; ?>
         </tbody>
@@ -109,7 +109,7 @@ $payaman_wishlist_promo_nonce   = wp_create_nonce('payaman_wishlist_promo_email'
 <div id="payaman_campaign_modal" class="payaman-modal-overlay" style="display:none;">
     <div class="payaman-modal">
         <div class="payaman-modal-header">
-            <h3 id="payaman_modal_title"><?php esc_html_e('New Campaign', 'payaman_wishlist'); ?></h3>
+            <h3 id="payaman_modal_title"><?php esc_html_e('New Campaign', 'payaman-wishlist'); ?></h3>
             <button type="button" class="payaman-modal-close">&times;</button>
         </div>
         <div class="payaman-modal-body">
@@ -118,65 +118,65 @@ $payaman_wishlist_promo_nonce   = wp_create_nonce('payaman_wishlist_promo_email'
 
             <table class="form-table">
                 <tr>
-                    <th scope="row"><label for="campaign_name"><?php esc_html_e('Campaign Name', 'payaman_wishlist'); ?> <span class="req">*</span></label></th>
+                    <th scope="row"><label for="campaign_name"><?php esc_html_e('Campaign Name', 'payaman-wishlist'); ?> <span class="req">*</span></label></th>
                     <td>
                         <input type="text" id="campaign_name" class="large-text" placeholder="e.g. Summer Sale 2026" required>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="campaign_products"><?php esc_html_e('Products', 'payaman_wishlist'); ?> <span class="req">*</span></label></th>
+                    <th scope="row"><label for="campaign_products"><?php esc_html_e('Products', 'payaman-wishlist'); ?> <span class="req">*</span></label></th>
                     <td>
-                        <select id="campaign_products" class="wc-product-search" multiple="multiple" style="width: 400px;" data-placeholder="<?php esc_attr_e('Search products...', 'payaman_wishlist'); ?>" data-action="woocommerce_json_search_products_and_variations"></select>
+                        <select id="campaign_products" class="wc-product-search" multiple="multiple" style="width: 400px;" data-placeholder="<?php esc_attr_e('Search products...', 'payaman-wishlist'); ?>" data-action="woocommerce_json_search_products_and_variations"></select>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><?php esc_html_e('Send Type', 'payaman_wishlist'); ?> <span class="req">*</span></th>
+                    <th scope="row"><?php esc_html_e('Send Type', 'payaman-wishlist'); ?> <span class="req">*</span></th>
                     <td>
                         <label style="margin-right: 20px;">
                             <input type="radio" name="campaign_send_type" value="immediate" checked>
-                            <?php esc_html_e('Send Immediately', 'payaman_wishlist'); ?>
+                            <?php esc_html_e('Send Immediately', 'payaman-wishlist'); ?>
                         </label>
                         <label>
                             <input type="radio" name="campaign_send_type" value="scheduled">
-                            <?php esc_html_e('Schedule', 'payaman_wishlist'); ?>
+                            <?php esc_html_e('Schedule', 'payaman-wishlist'); ?>
                         </label>
                     </td>
                 </tr>
                 <tr id="campaign_schedule_row" style="display:none;">
-                    <th scope="row"><label for="campaign_scheduled_at"><?php esc_html_e('Schedule Date & Time', 'payaman_wishlist'); ?></label></th>
+                    <th scope="row"><label for="campaign_scheduled_at"><?php esc_html_e('Schedule Date & Time', 'payaman-wishlist'); ?></label></th>
                     <td>
                         <input type="datetime-local" id="campaign_scheduled_at" class="regular-text">
                     </td>
                 </tr>
                 <tr id="campaign_repeat_row" style="display:none;">
-                    <th scope="row"><label for="campaign_repeat"><?php esc_html_e('Repeat', 'payaman_wishlist'); ?></label></th>
+                    <th scope="row"><label for="campaign_repeat"><?php esc_html_e('Repeat', 'payaman-wishlist'); ?></label></th>
                     <td>
                         <select id="campaign_repeat">
-                            <option value=""><?php esc_html_e('No repeat', 'payaman_wishlist'); ?></option>
-                            <option value="daily"><?php esc_html_e('Daily', 'payaman_wishlist'); ?></option>
-                            <option value="weekly"><?php esc_html_e('Weekly', 'payaman_wishlist'); ?></option>
-                            <option value="monthly"><?php esc_html_e('Monthly', 'payaman_wishlist'); ?></option>
+                            <option value=""><?php esc_html_e('No repeat', 'payaman-wishlist'); ?></option>
+                            <option value="daily"><?php esc_html_e('Daily', 'payaman-wishlist'); ?></option>
+                            <option value="weekly"><?php esc_html_e('Weekly', 'payaman-wishlist'); ?></option>
+                            <option value="monthly"><?php esc_html_e('Monthly', 'payaman-wishlist'); ?></option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="campaign_subject"><?php esc_html_e('Email Subject', 'payaman_wishlist'); ?> <span class="req">*</span></label></th>
+                    <th scope="row"><label for="campaign_subject"><?php esc_html_e('Email Subject', 'payaman-wishlist'); ?> <span class="req">*</span></label></th>
                     <td>
-                        <input type="text" id="campaign_subject" class="large-text" value="<?php esc_attr_e('Special offer on your wishlisted items, {user_name}!', 'payaman_wishlist'); ?>" required>
+                        <input type="text" id="campaign_subject" class="large-text" value="<?php esc_attr_e('Special offer on your wishlisted items, {user_name}!', 'payaman-wishlist'); ?>" required>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="campaign_body"><?php esc_html_e('Email Body', 'payaman_wishlist'); ?> <span class="req">*</span></label></th>
+                    <th scope="row"><label for="campaign_body"><?php esc_html_e('Email Body', 'payaman-wishlist'); ?> <span class="req">*</span></label></th>
                     <td>
                         <div class="payaman-tag-chips">
-                            <span class="payaman-tag-label"><?php esc_html_e('Insert tag:', 'payaman_wishlist'); ?></span>
+                            <span class="payaman-tag-label"><?php esc_html_e('Insert tag:', 'payaman-wishlist'); ?></span>
                             <span class="payaman-tag-chip" data-tag="{user_name}">{user_name}</span>
                             <span class="payaman-tag-chip" data-tag="{site_name}">{site_name}</span>
                             <span class="payaman-tag-chip" data-tag="{count}">{count}</span>
                             <span class="payaman-tag-chip" data-tag="{products_list}">{products_list}</span>
                         </div>
                         <textarea id="campaign_body" class="large-text" rows="12" required></textarea>
-                        <p class="description"><?php esc_html_e('Click the tags above to insert them at cursor position.', 'payaman_wishlist'); ?></p>
+                        <p class="description"><?php esc_html_e('Click the tags above to insert them at cursor position.', 'payaman-wishlist'); ?></p>
                     </td>
                 </tr>
             </table>
@@ -185,18 +185,18 @@ $payaman_wishlist_promo_nonce   = wp_create_nonce('payaman_wishlist_promo_email'
             <div style="display:flex;gap:6px;">
                 <button type="button" class="button" id="payaman_modal_preview">
                     <span class="dashicons dashicons-visibility" style="font-size:14px;width:14px;height:14px;vertical-align:middle;"></span>
-                    <?php esc_html_e('Preview', 'payaman_wishlist'); ?>
+                    <?php esc_html_e('Preview', 'payaman-wishlist'); ?>
                 </button>
                 <button type="button" class="button" id="payaman_modal_test">
                     <span class="dashicons dashicons-email" style="font-size:14px;width:14px;height:14px;vertical-align:middle;"></span>
-                    <?php esc_html_e('Send Test', 'payaman_wishlist'); ?>
+                    <?php esc_html_e('Send Test', 'payaman-wishlist'); ?>
                 </button>
             </div>
             <div style="display:flex;gap:6px;align-items:center;">
                 <span id="payaman_campaign_loading" style="display:none;"><span class="spinner is-active"></span></span>
-                <button type="button" class="button" id="payaman_modal_cancel"><?php esc_html_e('Cancel', 'payaman_wishlist'); ?></button>
+                <button type="button" class="button" id="payaman_modal_cancel"><?php esc_html_e('Cancel', 'payaman-wishlist'); ?></button>
                 <button type="button" class="button button-primary" id="payaman_modal_save">
-                    <?php esc_html_e('Save Campaign', 'payaman_wishlist'); ?>
+                    <?php esc_html_e('Save Campaign', 'payaman-wishlist'); ?>
                 </button>
             </div>
         </div>
@@ -206,14 +206,14 @@ $payaman_wishlist_promo_nonce   = wp_create_nonce('payaman_wishlist_promo_email'
 <div id="payaman_preview_modal" class="payaman-modal-overlay" style="display:none;">
     <div class="payaman-modal payaman-modal-wide">
         <div class="payaman-modal-header">
-            <h3 id="payaman_preview_title"><?php esc_html_e('Email Preview', 'payaman_wishlist'); ?></h3>
+            <h3 id="payaman_preview_title"><?php esc_html_e('Email Preview', 'payaman-wishlist'); ?></h3>
             <button type="button" class="preview-close">&times;</button>
         </div>
         <div class="payaman-modal-body" style="padding:0;">
             <iframe id="payaman_preview_iframe" style="width:100%;height:60vh;border:none;"></iframe>
         </div>
         <div class="payaman-modal-footer">
-            <button type="button" class="button preview-close"><?php esc_html_e('Close', 'payaman_wishlist'); ?></button>
+            <button type="button" class="button preview-close"><?php esc_html_e('Close', 'payaman-wishlist'); ?></button>
         </div>
     </div>
 </div>
@@ -395,7 +395,7 @@ jQuery(function($) {
 
     $('#payaman_new_campaign').on('click', function() {
         resetForm();
-        openModal('<?php echo esc_js(__('New Campaign', 'payaman_wishlist')); ?>');
+        openModal('<?php echo esc_js(__('New Campaign', 'payaman-wishlist')); ?>');
     });
 
     $('.payaman-modal-close, #payaman_modal_cancel').on('click', closeModal);
@@ -437,7 +437,7 @@ jQuery(function($) {
                 }
             }
 
-            openModal('<?php echo esc_js(__('Edit Campaign', 'payaman_wishlist')); ?>');
+            openModal('<?php echo esc_js(__('Edit Campaign', 'payaman-wishlist')); ?>');
         });
     });
 
@@ -473,12 +473,12 @@ jQuery(function($) {
         $('#payaman_modal_status').hide();
 
         if (!name || !products || products.length === 0 || !subject || !body) {
-            showModalStatus('<?php echo esc_js(__('Please fill in all fields.', 'payaman_wishlist')); ?>', 'error');
+            showModalStatus('<?php echo esc_js(__('Please fill in all fields.', 'payaman-wishlist')); ?>', 'error');
             return;
         }
 
         if (sendType === 'scheduled' && !scheduledAt) {
-            showModalStatus('<?php echo esc_js(__('Please select a schedule date and time.', 'payaman_wishlist')); ?>', 'error');
+            showModalStatus('<?php echo esc_js(__('Please select a schedule date and time.', 'payaman-wishlist')); ?>', 'error');
             return;
         }
 
@@ -511,14 +511,14 @@ jQuery(function($) {
                 showStatus(res.data.message, 'success');
                 refreshTable();
             } else {
-                showModalStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error saving campaign.', 'payaman_wishlist')); ?>', 'error');
+                showModalStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error saving campaign.', 'payaman-wishlist')); ?>', 'error');
                 $btn.prop('disabled', false);
                 $('#payaman_campaign_loading').hide();
             }
         }).fail(function() {
             $('#payaman_campaign_loading').hide();
             $btn.prop('disabled', false);
-            showModalStatus('<?php echo esc_js(__('Request failed.', 'payaman_wishlist')); ?>', 'error');
+            showModalStatus('<?php echo esc_js(__('Request failed.', 'payaman-wishlist')); ?>', 'error');
         });
     });
 
@@ -541,7 +541,7 @@ jQuery(function($) {
     $('#payaman_modal_preview').on('click', function() {
         var data = getFormPreviewData();
         if (!data.subject || !data.body || !data.product_ids.length) {
-            showModalStatus('<?php echo esc_js(__('Please fill in all fields first.', 'payaman_wishlist')); ?>', 'error');
+            showModalStatus('<?php echo esc_js(__('Please fill in all fields first.', 'payaman-wishlist')); ?>', 'error');
             return;
         }
         data.action = 'payaman_wishlist_preview_campaign';
@@ -554,7 +554,7 @@ jQuery(function($) {
             if (res.success) {
                 openPreviewModal(res.data.html, res.data.subject);
             } else {
-                showModalStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error generating preview.', 'payaman_wishlist')); ?>', 'error');
+                showModalStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error generating preview.', 'payaman-wishlist')); ?>', 'error');
             }
         }).fail(function() {
             $('#payaman_campaign_loading').hide();
@@ -565,7 +565,7 @@ jQuery(function($) {
     $('#payaman_modal_test').on('click', function() {
         var data = getFormPreviewData();
         if (!data.subject || !data.body || !data.product_ids.length) {
-            showModalStatus('<?php echo esc_js(__('Please fill in all fields first.', 'payaman_wishlist')); ?>', 'error');
+            showModalStatus('<?php echo esc_js(__('Please fill in all fields first.', 'payaman-wishlist')); ?>', 'error');
             return;
         }
         data.action = 'payaman_wishlist_test_campaign';
@@ -578,7 +578,7 @@ jQuery(function($) {
             if (res.success) {
                 showModalStatus(res.data.message, 'success');
             } else {
-                showModalStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error sending test.', 'payaman_wishlist')); ?>', 'error');
+                showModalStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error sending test.', 'payaman-wishlist')); ?>', 'error');
             }
         }).fail(function() {
             $('#payaman_campaign_loading').hide();
@@ -591,7 +591,7 @@ jQuery(function($) {
     });
 
     $(document).on('click', '.payaman-send-campaign', function() {
-        if (!confirm('<?php echo esc_js(__('Send this campaign now?', 'payaman_wishlist')); ?>')) {
+        if (!confirm('<?php echo esc_js(__('Send this campaign now?', 'payaman-wishlist')); ?>')) {
             return;
         }
 
@@ -614,12 +614,12 @@ jQuery(function($) {
                 showStatus(res.data.message, 'success');
                 refreshTable();
             } else {
-                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error sending campaign.', 'payaman_wishlist')); ?>', 'error');
+                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error sending campaign.', 'payaman-wishlist')); ?>', 'error');
             }
         }).fail(function() {
             $row.find('.campaign-loading').hide();
             $btn.prop('disabled', false);
-            showStatus('<?php echo esc_js(__('Request failed.', 'payaman_wishlist')); ?>', 'error');
+            showStatus('<?php echo esc_js(__('Request failed.', 'payaman-wishlist')); ?>', 'error');
         });
     });
 
@@ -642,7 +642,7 @@ jQuery(function($) {
             $tbody.empty();
 
             if (!res.data || res.data.length === 0) {
-                $tbody.html('<tr><td colspan="8"><?php echo esc_js(__('No campaigns yet.', 'payaman_wishlist')); ?></td></tr>');
+                $tbody.html('<tr><td colspan="8"><?php echo esc_js(__('No campaigns yet.', 'payaman-wishlist')); ?></td></tr>');
                 return;
             }
 
@@ -651,17 +651,17 @@ jQuery(function($) {
                 var actions = '';
                 var cap = function(s) { return s.charAt(0).toUpperCase() + s.slice(1); };
 
-                actions += '<button type="button" class="button payaman-btn-icon payaman-edit-campaign" title="<?php echo esc_js(__('Edit', 'payaman_wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-edit"></span></button> ';
+                actions += '<button type="button" class="button payaman-btn-icon payaman-edit-campaign" title="<?php echo esc_js(__('Edit', 'payaman-wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-edit"></span></button> ';
 
                 if (c.status === 'scheduled') {
-                    actions += '<button type="button" class="button payaman-btn-icon payaman-pause-campaign" title="<?php echo esc_js(__('Pause', 'payaman_wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-controls-pause"></span></button> ';
+                    actions += '<button type="button" class="button payaman-btn-icon payaman-pause-campaign" title="<?php echo esc_js(__('Pause', 'payaman-wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-controls-pause"></span></button> ';
                 } else if (c.status === 'paused') {
-                    actions += '<button type="button" class="button payaman-btn-icon payaman-resume-campaign" title="<?php echo esc_js(__('Resume', 'payaman_wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-controls-play"></span></button> ';
+                    actions += '<button type="button" class="button payaman-btn-icon payaman-resume-campaign" title="<?php echo esc_js(__('Resume', 'payaman-wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-controls-play"></span></button> ';
                 }
 
-                actions += '<button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php echo esc_js(__('Send Now', 'payaman_wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-email-alt"></span></button> ';
+                actions += '<button type="button" class="button payaman-btn-icon payaman-send-campaign" title="<?php echo esc_js(__('Send Now', 'payaman-wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-email-alt"></span></button> ';
 
-                actions += '<button type="button" class="button payaman-btn-icon payaman-delete-campaign" title="<?php echo esc_js(__('Delete', 'payaman_wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-trash"></span></button> ';
+                actions += '<button type="button" class="button payaman-btn-icon payaman-delete-campaign" title="<?php echo esc_js(__('Delete', 'payaman-wishlist')); ?>" data-id="' + c.id + '"><span class="dashicons dashicons-trash"></span></button> ';
                 actions += '<span class="campaign-loading" style="display:none;"><span class="spinner is-active"></span></span>';
 
                 $tbody.append(
@@ -698,12 +698,12 @@ jQuery(function($) {
                 showStatus(res.data.message, 'success');
                 refreshTable();
             } else {
-                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error.', 'payaman_wishlist')); ?>', 'error');
+                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error.', 'payaman-wishlist')); ?>', 'error');
             }
         }).fail(function() {
             $('#payaman_process_loading').hide();
             $btn.prop('disabled', false);
-            showStatus('<?php echo esc_js(__('Request failed.', 'payaman_wishlist')); ?>', 'error');
+            showStatus('<?php echo esc_js(__('Request failed.', 'payaman-wishlist')); ?>', 'error');
         });
     });
 
@@ -712,7 +712,7 @@ jQuery(function($) {
     });
 
     $(document).on('click', '.payaman-delete-campaign', function() {
-        if (!confirm('<?php echo esc_js(__('Delete this campaign permanently?', 'payaman_wishlist')); ?>')) {
+        if (!confirm('<?php echo esc_js(__('Delete this campaign permanently?', 'payaman-wishlist')); ?>')) {
             return;
         }
 
@@ -728,11 +728,11 @@ jQuery(function($) {
             if (res.success) {
                 $row.fadeOut(function() { $(this).remove(); });
                 if ($('#payaman_campaigns_tbody tr').length === 0) {
-                    $('#payaman_campaigns_tbody').html('<tr><td colspan="8"><?php echo esc_js(__('No campaigns yet.', 'payaman_wishlist')); ?></td></tr>');
+                    $('#payaman_campaigns_tbody').html('<tr><td colspan="8"><?php echo esc_js(__('No campaigns yet.', 'payaman-wishlist')); ?></td></tr>');
                 }
-                showStatus('<?php echo esc_js(__('Campaign deleted.', 'payaman_wishlist')); ?>', 'success');
+                showStatus('<?php echo esc_js(__('Campaign deleted.', 'payaman-wishlist')); ?>', 'success');
             } else {
-                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error deleting campaign.', 'payaman_wishlist')); ?>', 'error');
+                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error deleting campaign.', 'payaman-wishlist')); ?>', 'error');
             }
         });
     });
@@ -749,7 +749,7 @@ jQuery(function($) {
                 showStatus(res.data.message, 'success');
                 refreshTable();
             } else {
-                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error.', 'payaman_wishlist')); ?>', 'error');
+                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error.', 'payaman-wishlist')); ?>', 'error');
             }
         });
     });
@@ -766,7 +766,7 @@ jQuery(function($) {
                 showStatus(res.data.message, 'success');
                 refreshTable();
             } else {
-                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error.', 'payaman_wishlist')); ?>', 'error');
+                showStatus(res.data ? res.data.message : '<?php echo esc_js(__('Error.', 'payaman-wishlist')); ?>', 'error');
             }
         });
     });

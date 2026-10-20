@@ -49,15 +49,15 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			$variation_id  = isset($_POST['variation_id']) ? absint(wp_unslash($_POST['variation_id'])) : 0;
 
 			if (! $product_id || ! in_array($fav_action, array('insert', 'delete'), true)) {
-				wp_send_json_error(array('message' => __('Invalid request data.', 'payaman_wishlist')), 400);
+				wp_send_json_error(array('message' => __('Invalid request data.', 'payaman-wishlist')), 400);
 			}
 
 			if ('product' !== get_post_type($product_id)) {
-				wp_send_json_error(array('message' => __('Invalid product.', 'payaman_wishlist')), 400);
+				wp_send_json_error(array('message' => __('Invalid product.', 'payaman-wishlist')), 400);
 			}
 
 			if ('yes' === payaman_wishlist_setting('required_login', 'no') && ! is_user_logged_in()) {
-				wp_send_json_error(array('message' => payaman_wishlist_setting('required_login_message', __('You must be logged in.', 'payaman_wishlist'))), 403);
+				wp_send_json_error(array('message' => payaman_wishlist_setting('required_login_message', __('You must be logged in.', 'payaman-wishlist'))), 403);
 			}
 
 			$current_user_id = get_current_user_id();
@@ -85,7 +85,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			}
 
 			if (payaman_wishlist_store_wishlists($product_id, $wishlists) === false) {
-				wp_send_json_error(array('message' => __('Failed to update wishlists.', 'payaman_wishlist')), 500);
+				wp_send_json_error(array('message' => __('Failed to update wishlists.', 'payaman-wishlist')), 500);
 			}
 
 			$count = count($wishlists);
@@ -111,11 +111,11 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			$collection_id = isset($_POST['collection_id']) ? sanitize_text_field(wp_unslash($_POST['collection_id'])) : '';
 
 			if (empty($product_ids)) {
-				wp_send_json_error(array('message' => __('Invalid selection.', 'payaman_wishlist')), 400);
+				wp_send_json_error(array('message' => __('Invalid selection.', 'payaman-wishlist')), 400);
 			}
 
 			if ('yes' === payaman_wishlist_setting('required_login', 'no') && ! is_user_logged_in()) {
-				wp_send_json_error(array('message' => payaman_wishlist_setting('required_login_message', __('You must be logged in.', 'payaman_wishlist'))), 403);
+				wp_send_json_error(array('message' => payaman_wishlist_setting('required_login_message', __('You must be logged in.', 'payaman-wishlist'))), 403);
 			}
 
 			$current_user_id = get_current_user_id();
@@ -161,7 +161,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			check_ajax_referer('payaman_wishlist_bulk', 'nonce');
 
 			if (! is_user_logged_in()) {
-				wp_send_json_error(array('message' => __('You must be logged in.', 'payaman_wishlist')), 403);
+				wp_send_json_error(array('message' => __('You must be logged in.', 'payaman-wishlist')), 403);
 			}
 
 			$user_id = get_current_user_id();
@@ -169,7 +169,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			$product_ids = array_values(array_unique(array_filter($product_ids)));
 
 			if (empty($product_ids)) {
-				wp_send_json_error(array('message' => __('No products selected.', 'payaman_wishlist')), 400);
+				wp_send_json_error(array('message' => __('No products selected.', 'payaman-wishlist')), 400);
 			}
 
 			$added   = array();
@@ -185,7 +185,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 					$skipped[] = array(
 						'id'   => $product_id,
 						'name' => $product->get_name(),
-						'reason' => __('Not purchasable or out of stock', 'payaman_wishlist'),
+						'reason' => __('Not purchasable or out of stock', 'payaman-wishlist'),
 					);
 					continue;
 				}
@@ -194,7 +194,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 					$skipped[] = array(
 						'id'   => $product_id,
 						'name' => $product->get_name(),
-						'reason' => __('Please select options', 'payaman_wishlist'),
+						'reason' => __('Please select options', 'payaman-wishlist'),
 					);
 					continue;
 				}
@@ -208,14 +208,14 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 			$message = sprintf(
 				/* translators: %d: number of products added to cart */
-				__('%d product(s) added to cart.', 'payaman_wishlist'),
+				__('%d product(s) added to cart.', 'payaman-wishlist'),
 				count($added)
 			);
 
 			if (! empty($skipped)) {
 				$message .= ' ' . sprintf(
 					/* translators: %d: number of products skipped */
-					__('%d product(s) skipped (variable/grouped/out of stock).', 'payaman_wishlist'),
+					__('%d product(s) skipped (variable/grouped/out of stock).', 'payaman-wishlist'),
 					count($skipped)
 				);
 			}
@@ -233,12 +233,12 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			check_ajax_referer('payaman_wishlist_toggle', 'nonce');
 
 			if (! is_user_logged_in()) {
-				wp_send_json_error(array('message' => __('You must be logged in.', 'payaman_wishlist')), 403);
+				wp_send_json_error(array('message' => __('You must be logged in.', 'payaman-wishlist')), 403);
 			}
 
 			$product_id = isset($_POST['product_id']) ? absint(wp_unslash($_POST['product_id'])) : 0;
 			if (! $product_id) {
-				wp_send_json_error(array('message' => __('Invalid product.', 'payaman_wishlist')), 400);
+				wp_send_json_error(array('message' => __('Invalid product.', 'payaman-wishlist')), 400);
 			}
 
 			payaman_wishlist_remove_product_from_user(get_current_user_id(), $product_id);
@@ -251,7 +251,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			check_ajax_referer('payaman_wishlist_collection', 'nonce');
 
 			if (! is_user_logged_in()) {
-				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman_wishlist')), 403);
+				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman-wishlist')), 403);
 			}
 
 			$user_id   = get_current_user_id();
@@ -275,7 +275,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			check_ajax_referer('payaman_wishlist_collection', 'nonce');
 
 			if (! is_user_logged_in()) {
-				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman_wishlist')), 403);
+				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman-wishlist')), 403);
 			}
 
 			$user_id = get_current_user_id();
@@ -308,7 +308,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			check_ajax_referer('payaman_wishlist_collection', 'nonce');
 
 			if (! is_user_logged_in()) {
-				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman_wishlist')), 403);
+				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman-wishlist')), 403);
 			}
 
 			$user_id = get_current_user_id();
@@ -321,7 +321,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			}
 
 			wp_send_json_success(array(
-				'message' => __('Collection deleted successfully.', 'payaman_wishlist'),
+				'message' => __('Collection deleted successfully.', 'payaman-wishlist'),
 				'collections' => payaman_wishlist_prepare_collections_response($user_id),
 			));
 		}
@@ -331,7 +331,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			check_ajax_referer('payaman_wishlist_collection', 'nonce');
 
 			if (! is_user_logged_in()) {
-				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman_wishlist')), 403);
+				wp_send_json_error(array('message' => __('You must be logged in to manage collections.', 'payaman-wishlist')), 403);
 			}
 
 			$user_id = get_current_user_id();
@@ -341,7 +341,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 			$source_collection_id = isset($_POST['source_collection_id']) ? sanitize_text_field(wp_unslash($_POST['source_collection_id'])) : '';
 
 			if (empty($product_ids)) {
-				wp_send_json_error(array('message' => __('Invalid selection.', 'payaman_wishlist')), 400);
+				wp_send_json_error(array('message' => __('Invalid selection.', 'payaman-wishlist')), 400);
 			}
 
 			$result = payaman_wishlist_move_items_between_collections($user_id, $product_ids, $target_collection_id, $source_collection_id);
@@ -360,7 +360,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$name           = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
@@ -374,11 +374,11 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		$tz_offset      = isset($_POST['tz_offset']) ? intval($_POST['tz_offset']) : 0;
 
 		if (! $name || ! $subject || ! $body || empty($product_ids)) {
-			wp_send_json_error(array('message' => __('Please fill in all fields.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Please fill in all fields.', 'payaman-wishlist')), 400);
 		}
 
 		if ($send_type === 'scheduled' && ! $scheduled_at) {
-			wp_send_json_error(array('message' => __('Please select a schedule date and time.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Please select a schedule date and time.', 'payaman-wishlist')), 400);
 		}
 
 		if ($send_type === 'scheduled' && $scheduled_at) {
@@ -402,10 +402,10 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		$id = $campaigns->create($data);
 
 		if (! $id) {
-			wp_send_json_error(array('message' => __('Failed to save campaign.', 'payaman_wishlist')), 500);
+			wp_send_json_error(array('message' => __('Failed to save campaign.', 'payaman-wishlist')), 500);
 		}
 
-		wp_send_json_success(array('message' => __('Campaign saved successfully.', 'payaman_wishlist'), 'id' => $id));
+		wp_send_json_success(array('message' => __('Campaign saved successfully.', 'payaman-wishlist'), 'id' => $id));
 	}
 
 	public function ajax_get_campaign()
@@ -413,19 +413,19 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$campaign_id = isset($_POST['campaign_id']) ? absint(wp_unslash($_POST['campaign_id'])) : 0;
 		if (! $campaign_id) {
-			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman-wishlist')), 400);
 		}
 
 		$campaigns = new Payaman_Wishlist_Campaigns();
 		$campaign = $campaigns->get($campaign_id);
 
 		if (! $campaign) {
-			wp_send_json_error(array('message' => __('Campaign not found.', 'payaman_wishlist')), 404);
+			wp_send_json_error(array('message' => __('Campaign not found.', 'payaman-wishlist')), 404);
 		}
 
 		$product_names = array();
@@ -444,7 +444,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$campaign_id = isset($_POST['campaign_id']) ? absint(wp_unslash($_POST['campaign_id'])) : 0;
@@ -459,11 +459,11 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		$tz_offset   = isset($_POST['tz_offset']) ? intval($_POST['tz_offset']) : 0;
 
 		if (! $campaign_id || ! $name || ! $subject || ! $body || empty($product_ids)) {
-			wp_send_json_error(array('message' => __('Please fill in all fields.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Please fill in all fields.', 'payaman-wishlist')), 400);
 		}
 
 		if ($send_type === 'scheduled' && ! $scheduled_at) {
-			wp_send_json_error(array('message' => __('Please select a schedule date and time.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Please select a schedule date and time.', 'payaman-wishlist')), 400);
 		}
 
 		if ($send_type === 'scheduled' && $scheduled_at) {
@@ -489,7 +489,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		$campaigns = new Payaman_Wishlist_Campaigns();
 		$campaigns->update($campaign_id, $data);
 
-		wp_send_json_success(array('message' => __('Campaign updated successfully.', 'payaman_wishlist')));
+		wp_send_json_success(array('message' => __('Campaign updated successfully.', 'payaman-wishlist')));
 	}
 
 	public function ajax_send_campaign()
@@ -497,12 +497,12 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$campaign_id = isset($_POST['campaign_id']) ? absint(wp_unslash($_POST['campaign_id'])) : 0;
 		if (! $campaign_id) {
-			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman-wishlist')), 400);
 		}
 
 		$campaigns = new Payaman_Wishlist_Campaigns();
@@ -514,7 +514,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 		$message = sprintf(
 			/* translators: 1: number of emails sent, 2: total targeted emails */
-			__('Campaign sent! %1$d of %2$d email(s) delivered.', 'payaman_wishlist'),
+			__('Campaign sent! %1$d of %2$d email(s) delivered.', 'payaman-wishlist'),
 			$result['sent'],
 			$result['targeted']
 		);
@@ -527,18 +527,18 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$campaign_id = isset($_POST['campaign_id']) ? absint(wp_unslash($_POST['campaign_id'])) : 0;
 		if (! $campaign_id) {
-			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman-wishlist')), 400);
 		}
 
 		$campaigns = new Payaman_Wishlist_Campaigns();
 		$campaigns->delete($campaign_id);
 
-		wp_send_json_success(array('message' => __('Campaign deleted.', 'payaman_wishlist')));
+		wp_send_json_success(array('message' => __('Campaign deleted.', 'payaman-wishlist')));
 	}
 
 	public function ajax_get_campaigns()
@@ -546,7 +546,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$campaigns_obj = new Payaman_Wishlist_Campaigns();
@@ -572,18 +572,18 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$campaign_id = isset($_POST['campaign_id']) ? absint(wp_unslash($_POST['campaign_id'])) : 0;
 		if (! $campaign_id) {
-			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman-wishlist')), 400);
 		}
 
 		$campaigns = new Payaman_Wishlist_Campaigns();
 		$campaigns->pause($campaign_id);
 
-		wp_send_json_success(array('message' => __('Campaign paused.', 'payaman_wishlist')));
+		wp_send_json_success(array('message' => __('Campaign paused.', 'payaman-wishlist')));
 	}
 
 	public function ajax_resume_campaign()
@@ -591,22 +591,22 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$campaign_id = isset($_POST['campaign_id']) ? absint(wp_unslash($_POST['campaign_id'])) : 0;
 		if (! $campaign_id) {
-			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Invalid campaign.', 'payaman-wishlist')), 400);
 		}
 
 		$campaigns = new Payaman_Wishlist_Campaigns();
 		$result = $campaigns->resume($campaign_id);
 
 		if (! $result) {
-			wp_send_json_error(array('message' => __('Cannot resume this campaign.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Cannot resume this campaign.', 'payaman-wishlist')), 400);
 		}
 
-		$message = __('Campaign resumed. It will be processed at the next scheduled time.', 'payaman_wishlist');
+		$message = __('Campaign resumed. It will be processed at the next scheduled time.', 'payaman-wishlist');
 
 		wp_send_json_success(array('message' => $message));
 	}
@@ -616,7 +616,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$subject     = isset($_POST['subject']) ? sanitize_text_field(wp_unslash($_POST['subject'])) : '';
@@ -662,7 +662,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$subject     = isset($_POST['subject']) ? sanitize_text_field(wp_unslash($_POST['subject'])) : '';
@@ -671,7 +671,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		$product_ids = array_values(array_unique(array_filter($product_ids)));
 
 		if (! $subject || ! $body || empty($product_ids)) {
-			wp_send_json_error(array('message' => __('Please fill in all fields first.', 'payaman_wishlist')), 400);
+			wp_send_json_error(array('message' => __('Please fill in all fields first.', 'payaman-wishlist')), 400);
 		}
 
 		$sample_products = array();
@@ -707,9 +707,9 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		);
 
 		if ($mailed) {
-			wp_send_json_success(array('message' => __('Test email sent to your email address.', 'payaman_wishlist')));
+			wp_send_json_success(array('message' => __('Test email sent to your email address.', 'payaman-wishlist')));
 		} else {
-			wp_send_json_error(array('message' => __('Failed to send test email.', 'payaman_wishlist')), 500);
+			wp_send_json_error(array('message' => __('Failed to send test email.', 'payaman-wishlist')), 500);
 		}
 	}
 
@@ -718,7 +718,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 		check_ajax_referer('payaman_wishlist_promo_email', 'nonce');
 
 		if (! current_user_can('manage_options')) {
-			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman_wishlist')), 403);
+			wp_send_json_error(array('message' => __('Insufficient permissions.', 'payaman-wishlist')), 403);
 		}
 
 		$campaigns = new Payaman_Wishlist_Campaigns();
@@ -726,7 +726,7 @@ if (! class_exists('Payaman_Wishlist_AJAX')) {
 
 		$total = count($results);
 		/* translators: %d: number of processed campaigns */
-		$message = sprintf(__('Processed %d scheduled campaign(s).', 'payaman_wishlist'), $total);
+		$message = sprintf(__('Processed %d scheduled campaign(s).', 'payaman-wishlist'), $total);
 
 		wp_send_json_success(array('message' => $message, 'results' => $results));
 	}

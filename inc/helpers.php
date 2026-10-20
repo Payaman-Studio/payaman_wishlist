@@ -637,7 +637,7 @@ function payaman_wishlist_get_default_collection($user_id, $create_if_missing = 
 	}
 	return payaman_wishlist_insert_collection(
 		$user_id,
-		__('My Wishlist', 'payaman_wishlist'),
+		__('My Wishlist', 'payaman-wishlist'),
 		false,
 		true,
 		wp_generate_uuid4()
@@ -654,7 +654,7 @@ function payaman_wishlist_insert_collection($user_id, $name, $is_public = false,
 	}
 	$name = payaman_wishlist_sanitize_collection_name($name);
 	if ('' === $name) {
-		$name = __('My Wishlist', 'payaman_wishlist');
+		$name = __('My Wishlist', 'payaman-wishlist');
 	}
 	if ('' === $slug) {
 		$slug = wp_generate_uuid4();
@@ -930,11 +930,11 @@ function payaman_wishlist_create_collection($user_id, $name, $is_public = false)
 {
 	$user_id = absint($user_id);
 	if (! $user_id) {
-		return new WP_Error('invalid_user', __('Invalid user.', 'payaman_wishlist'));
+		return new WP_Error('invalid_user', __('Invalid user.', 'payaman-wishlist'));
 	}
 	$collections = payaman_wishlist_get_user_collections($user_id, true);
 	if (count($collections) >= PAYAMAN_WISHLIST_COLLECTION_LIMIT) {
-		return new WP_Error('collection_limit', __('You have reached the maximum number of collections.', 'payaman_wishlist'));
+		return new WP_Error('collection_limit', __('You have reached the maximum number of collections.', 'payaman-wishlist'));
 	}
 	return payaman_wishlist_insert_collection($user_id, $name, $is_public);
 }
@@ -944,11 +944,11 @@ function payaman_wishlist_update_collection($user_id, $collection_id, $args = ar
 	global $wpdb;
 	$user_id = absint($user_id);
 	if (! $user_id) {
-		return new WP_Error('invalid_user', __('Invalid user.', 'payaman_wishlist'));
+		return new WP_Error('invalid_user', __('Invalid user.', 'payaman-wishlist'));
 	}
 	$record = payaman_wishlist_get_collection_record($user_id, $collection_id, false);
 	if (! $record) {
-		return new WP_Error('not_found', __('Collection not found.', 'payaman_wishlist'));
+		return new WP_Error('not_found', __('Collection not found.', 'payaman-wishlist'));
 	}
 	$data  = array();
 	$where = array('id' => $record['db_id']);
@@ -980,14 +980,14 @@ function payaman_wishlist_delete_collection($user_id, $collection_id, $target_co
 	global $wpdb;
 	$user_id = absint($user_id);
 	if (! $user_id) {
-		return new WP_Error('invalid_user', __('Invalid user.', 'payaman_wishlist'));
+		return new WP_Error('invalid_user', __('Invalid user.', 'payaman-wishlist'));
 	}
 	$collection = payaman_wishlist_get_collection_record($user_id, $collection_id, false);
 	if (! $collection) {
-		return new WP_Error('not_found', __('Collection not found.', 'payaman_wishlist'));
+		return new WP_Error('not_found', __('Collection not found.', 'payaman-wishlist'));
 	}
 	if (! empty($collection['is_default'])) {
-		return new WP_Error('cannot_delete_default', __('Default collection cannot be deleted.', 'payaman_wishlist'));
+		return new WP_Error('cannot_delete_default', __('Default collection cannot be deleted.', 'payaman-wishlist'));
 	}
 	$target = payaman_wishlist_get_collection_record($user_id, $target_collection_id, true);
 	if ($target && $target['db_id'] === $collection['db_id']) {
@@ -1020,15 +1020,15 @@ function payaman_wishlist_move_items_between_collections($user_id, array $produc
 	global $wpdb;
 	$user_id = absint($user_id);
 	if (! $user_id) {
-		return new WP_Error('invalid_user', __('Invalid user.', 'payaman_wishlist'));
+		return new WP_Error('invalid_user', __('Invalid user.', 'payaman-wishlist'));
 	}
 	$product_ids = array_values(array_unique(array_filter(array_map('absint', $product_ids))));
 	if (empty($product_ids)) {
-		return new WP_Error('invalid_products', __('No products selected.', 'payaman_wishlist'));
+		return new WP_Error('invalid_products', __('No products selected.', 'payaman-wishlist'));
 	}
 	$target = payaman_wishlist_get_collection_record($user_id, $target_collection_id, true);
 	if (! $target) {
-		return new WP_Error('invalid_target', __('Target collection not found.', 'payaman_wishlist'));
+		return new WP_Error('invalid_target', __('Target collection not found.', 'payaman-wishlist'));
 	}
 	$items_table = payaman_wishlist_get_table_name('items');
 	if ($source_collection_id) {
@@ -1158,7 +1158,7 @@ function payaman_wishlist_migrate_user_collections($user_id)
 		return;
 	}
 	foreach ($legacy_collections as $legacy_id => $collection) {
-		$name = isset($collection['name']) ? $collection['name'] : __('My Wishlist', 'payaman_wishlist');
+		$name = isset($collection['name']) ? $collection['name'] : __('My Wishlist', 'payaman-wishlist');
 		$is_public = ! empty($collection['is_public']);
 		$is_default = (strpos($legacy_id, 'default_') === 0);
 		$slug = is_string($legacy_id) ? $legacy_id : wp_generate_uuid4();

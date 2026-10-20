@@ -218,12 +218,12 @@ if (! class_exists('Payaman_Wishlist_Campaigns')) {
 		{
 			$campaign = $this->get($id);
 			if (! $campaign) {
-				return new WP_Error('not_found', __('Campaign not found.', 'payaman_wishlist'));
+				return new WP_Error('not_found', __('Campaign not found.', 'payaman-wishlist'));
 			}
 
 			$product_ids = $campaign['product_ids'];
 			if (empty($product_ids)) {
-				return new WP_Error('no_products', __('No products in this campaign.', 'payaman_wishlist'));
+				return new WP_Error('no_products', __('No products in this campaign.', 'payaman-wishlist'));
 			}
 
 			$all_user_ids = array();
@@ -234,7 +234,7 @@ if (! class_exists('Payaman_Wishlist_Campaigns')) {
 			$all_user_ids = array_values(array_unique(array_filter(array_map('absint', $all_user_ids))));
 
 			if (empty($all_user_ids)) {
-				return new WP_Error('no_users', __('No users have these products in their wishlist.', 'payaman_wishlist'));
+				return new WP_Error('no_users', __('No users have these products in their wishlist.', 'payaman-wishlist'));
 			}
 
 			$site_name = get_bloginfo('name');

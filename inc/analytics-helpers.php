@@ -47,7 +47,7 @@ function payaman_wishlist_get_top_products($limit = 10)
 			$result['image'] = $product->get_image('thumbnail');
 			$result['link']  = get_edit_post_link($result['product_id']);
 		} else {
-			$result['name']  = __('Unknown Product', 'payaman_wishlist');
+			$result['name']  = __('Unknown Product', 'payaman-wishlist');
 			$result['price'] = '';
 			$result['image'] = '';
 			$result['link']  = '#';

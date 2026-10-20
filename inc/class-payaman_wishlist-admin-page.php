@@ -44,8 +44,8 @@ if (! class_exists('Payaman_Wishlist_Admin_Page')) {
 			// Register the Payaman Studio container menu when needed so other plugins can hook into it.
 			if (! isset($GLOBALS['admin_page_hooks'][$parent_slug])) {
 				add_menu_page(
-					__('Payaman Studio', 'payaman_wishlist'),
-					__('Payaman Studio', 'payaman_wishlist'),
+					__('Payaman Studio', 'payaman-wishlist'),
+					__('Payaman Studio', 'payaman-wishlist'),
 					'manage_options',
 					$parent_slug,
 					array($this, 'render_payamanstudio_dashboard'),
@@ -135,7 +135,7 @@ if (! class_exists('Payaman_Wishlist_Admin_Page')) {
 		 */
 		public function render_payamanstudio_dashboard()
 		{
-			echo '<div class="wrap payamanstudio-admin"><h1>' . esc_html__('Payaman Studio', 'payaman_wishlist') . '</h1><p>' . esc_html__('Select a plugin from the submenu to manage its settings.', 'payaman_wishlist') . '</p></div>';
+			echo '<div class="wrap payamanstudio-admin"><h1>' . esc_html__('Payaman Studio', 'payaman-wishlist') . '</h1><p>' . esc_html__('Select a plugin from the submenu to manage its settings.', 'payaman-wishlist') . '</p></div>';
 		}
 	}
 

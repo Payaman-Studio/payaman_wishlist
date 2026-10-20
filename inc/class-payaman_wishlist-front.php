@@ -217,8 +217,8 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 				'remove_after_add_to_cart'      => payaman_wishlist_setting('remove_after_add_to_cart', 'no'),
 				'add_success_message'            => payaman_wishlist_setting('add_success'),
 				'remove_success_message'         => payaman_wishlist_setting('remove_success'),
-				'required_login_message'        => payaman_wishlist_setting('required_login_message', __('You must be logged in.', 'payaman_wishlist')),
-				'error_message'                 => __('Unable to update wishlist. Please try again.', 'payaman_wishlist'),
+				'required_login_message'        => payaman_wishlist_setting('required_login_message', __('You must be logged in.', 'payaman-wishlist')),
+				'error_message'                 => __('Unable to update wishlist. Please try again.', 'payaman-wishlist'),
 				'wishlist_page_url'             => payaman_wishlist_get_wishlist_page_url(),
 				'cart_url'                      => wc_get_cart_url(),
 				'collections'                   => $collections_response,
@@ -227,26 +227,26 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 				'can_manage_collections'        => $can_manage_collections,
 				// i18n strings
 				'i18n'                          => array(
-					'fill_collection_name'    => __('Please fill in the collection name.', 'payaman_wishlist'),
-					'select_collection_first' => __('Please select a collection first.', 'payaman_wishlist'),
-					'collection_limit_reached' => __('Collection limit has been reached.', 'payaman_wishlist'),
-					'generic_error'           => __('An error occurred. Please try again.', 'payaman_wishlist'),
-					'no_collections_yet'      => __('No collections yet', 'payaman_wishlist'),
-					'ok'                      => __('OK', 'payaman_wishlist'),
-					'cancel'                  => __('Cancel', 'payaman_wishlist'),
-					'yes'                     => __('Yes', 'payaman_wishlist'),
-					'close'                   => __('Close', 'payaman_wishlist'),
-					'view_wishlist'           => __('View Wishlist', 'payaman_wishlist'),
-					'confirm_delete_collection' => __('Are you sure you want to delete this collection? Products will be moved to the default collection.', 'payaman_wishlist'),
-					'rename_collection'       => __('Enter new name:', 'payaman_wishlist'),
-					'add_all_to_cart'         => __('Add All to Cart', 'payaman_wishlist'),
-					'adding_to_cart'          => __('Adding…', 'payaman_wishlist'),
-					'view_cart'               => __('View Cart', 'payaman_wishlist'),
-					'move_success'             => __('Items moved successfully.', 'payaman_wishlist'),
-					'move_to_collection'      => __('Move to collection:', 'payaman_wishlist'),
-					'move'                    => __('Move', 'payaman_wishlist'),
-					'current_collection'      => __('current', 'payaman_wishlist'),
-					'no_products_in_wishlist' => __('No products in this collection.', 'payaman_wishlist'),
+					'fill_collection_name'    => __('Please fill in the collection name.', 'payaman-wishlist'),
+					'select_collection_first' => __('Please select a collection first.', 'payaman-wishlist'),
+					'collection_limit_reached' => __('Collection limit has been reached.', 'payaman-wishlist'),
+					'generic_error'           => __('An error occurred. Please try again.', 'payaman-wishlist'),
+					'no_collections_yet'      => __('No collections yet', 'payaman-wishlist'),
+					'ok'                      => __('OK', 'payaman-wishlist'),
+					'cancel'                  => __('Cancel', 'payaman-wishlist'),
+					'yes'                     => __('Yes', 'payaman-wishlist'),
+					'close'                   => __('Close', 'payaman-wishlist'),
+					'view_wishlist'           => __('View Wishlist', 'payaman-wishlist'),
+					'confirm_delete_collection' => __('Are you sure you want to delete this collection? Products will be moved to the default collection.', 'payaman-wishlist'),
+					'rename_collection'       => __('Enter new name:', 'payaman-wishlist'),
+					'add_all_to_cart'         => __('Add All to Cart', 'payaman-wishlist'),
+					'adding_to_cart'          => __('Adding…', 'payaman-wishlist'),
+					'view_cart'               => __('View Cart', 'payaman-wishlist'),
+					'move_success'             => __('Items moved successfully.', 'payaman-wishlist'),
+					'move_to_collection'      => __('Move to collection:', 'payaman-wishlist'),
+					'move'                    => __('Move', 'payaman-wishlist'),
+					'current_collection'      => __('current', 'payaman-wishlist'),
+					'no_products_in_wishlist' => __('No products in this collection.', 'payaman-wishlist'),
 				),
 			);
 
@@ -424,7 +424,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			if ($share_slug) {
 				$public_collection = payaman_wishlist_get_public_collection($share_slug);
 				if (! $public_collection) {
-					echo '<p class="payaman_wishlist-empty-message">' . esc_html__('This wishlist collection is not available or is set to private.', 'payaman_wishlist') . '</p>';
+					echo '<p class="payaman_wishlist-empty-message">' . esc_html__('This wishlist collection is not available or is set to private.', 'payaman-wishlist') . '</p>';
 					return;
 				}
 				$list_wishlist = $public_collection['product_ids'];
@@ -446,7 +446,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 						echo '<p class="payaman_wishlist-shared-notice">'
 							. sprintf(
 								/* translators: %s: collection name */
-								esc_html__('Shared collection: %s', 'payaman_wishlist'),
+								esc_html__('Shared collection: %s', 'payaman-wishlist'),
 								'<strong>' . esc_html($public_collection['name']) . '</strong>'
 							)
 							. '</p>';
@@ -463,7 +463,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 			}
 
 			if ('yes' === payaman_wishlist_setting('required_login', 'no') && ! is_user_logged_in()) {
-				echo wp_kses_post(apply_filters('payaman_wishlist_must_be_logged_in_message', __('You must be logged in.', 'payaman_wishlist')));
+				echo wp_kses_post(apply_filters('payaman_wishlist_must_be_logged_in_message', __('You must be logged in.', 'payaman-wishlist')));
 				return;
 			}
 
@@ -549,7 +549,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 		 */
 		private function render_wishlist_table($products, $active_collection = '')
 		{
-			$empty_message = esc_html__('No wishlist products found.', 'payaman_wishlist');
+			$empty_message = esc_html__('No wishlist products found.', 'payaman-wishlist');
 			$collections = is_user_logged_in() ? payaman_wishlist_prepare_collections_response(get_current_user_id()) : array();
 			$current_collection_id = $active_collection ? $active_collection : (is_user_logged_in() ? payaman_wishlist_get_default_collection_id(get_current_user_id()) : '');
 ?>
@@ -569,12 +569,12 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 									</a>
 									<?php if ($is_active && is_user_logged_in()) : ?>
 										<div class="payaman_wishlist-collection-quick-actions">
-											<button type="button" class="payaman_wishlist-collection-rename" data-id="<?php echo esc_attr($collection['id']); ?>" data-name="<?php echo esc_attr($collection['name']); ?>" title="<?php esc_attr_e('Rename', 'payaman_wishlist'); ?>">✏️</button>
-											<button type="button" class="payaman_wishlist-collection-visibility" data-collection-id="<?php echo esc_attr($collection['id']); ?>" data-public="<?php echo $is_public ? '1' : '0'; ?>" title="<?php echo $is_public ? esc_attr__('Make Private', 'payaman_wishlist') : esc_attr__('Make Public', 'payaman_wishlist'); ?>">
+											<button type="button" class="payaman_wishlist-collection-rename" data-id="<?php echo esc_attr($collection['id']); ?>" data-name="<?php echo esc_attr($collection['name']); ?>" title="<?php esc_attr_e('Rename', 'payaman-wishlist'); ?>">✏️</button>
+											<button type="button" class="payaman_wishlist-collection-visibility" data-collection-id="<?php echo esc_attr($collection['id']); ?>" data-public="<?php echo $is_public ? '1' : '0'; ?>" title="<?php echo $is_public ? esc_attr__('Make Private', 'payaman-wishlist') : esc_attr__('Make Public', 'payaman-wishlist'); ?>">
 												<?php echo $is_public ? '🌐' : '🔒'; ?>
 											</button>
 											<?php if (! $is_default) : ?>
-												<button type="button" class="payaman_wishlist-collection-delete" data-id="<?php echo esc_attr($collection['id']); ?>" title="<?php esc_attr_e('Delete', 'payaman_wishlist'); ?>">🗑️</button>
+												<button type="button" class="payaman_wishlist-collection-delete" data-id="<?php echo esc_attr($collection['id']); ?>" title="<?php esc_attr_e('Delete', 'payaman-wishlist'); ?>">🗑️</button>
 											<?php endif; ?>
 										</div>
 									<?php endif; ?>
@@ -582,7 +582,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 							<?php endforeach; ?>
 							<?php if (is_user_logged_in()) : ?>
 								<li class="payaman_wishlist-add-new-tab">
-									<button type="button" class="payaman_wishlist-collection-add-new" title="<?php esc_attr_e('Add New Collection', 'payaman_wishlist'); ?>">+ <?php esc_html_e('New', 'payaman_wishlist'); ?></button>
+									<button type="button" class="payaman_wishlist-collection-add-new" title="<?php esc_attr_e('Add New Collection', 'payaman-wishlist'); ?>">+ <?php esc_html_e('New', 'payaman-wishlist'); ?></button>
 								</li>
 							<?php endif; ?>
 						</ul>
@@ -602,16 +602,16 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 				if ($active_col_data && ! empty($active_col_data['is_public']) && is_user_logged_in()) : 
 					$share_url = add_query_arg('share', $active_col_data['id'], payaman_wishlist_get_wishlist_page_url());
 					/* translators: 1: collection name, 2: share URL */
-					$wa_message = sprintf(__('Check out my wishlist: %1$s - %2$s', 'payaman_wishlist'), $active_col_data['name'], $share_url);
+					$wa_message = sprintf(__('Check out my wishlist: %1$s - %2$s', 'payaman-wishlist'), $active_col_data['name'], $share_url);
 					$wa_url = 'https://wa.me/?text=' . rawurlencode($wa_message);
 				?>
 					<div class="payaman_wishlist-collection-share-panel">
-						<div class="payaman_wishlist-share-label"><?php esc_html_e('Public Link:', 'payaman_wishlist'); ?></div>
+						<div class="payaman_wishlist-share-label"><?php esc_html_e('Public Link:', 'payaman-wishlist'); ?></div>
 						<div class="payaman_wishlist-share-controls">
 							<input type="text" readonly value="<?php echo esc_url($share_url); ?>" class="payaman_wishlist-share-url-input" />
-							<button type="button" class="payaman_wishlist-copy-share-url" data-url="<?php echo esc_url($share_url); ?>"><?php esc_html_e('Copy Link', 'payaman_wishlist'); ?></button>
+							<button type="button" class="payaman_wishlist-copy-share-url" data-url="<?php echo esc_url($share_url); ?>"><?php esc_html_e('Copy Link', 'payaman-wishlist'); ?></button>
 							<a href="<?php echo esc_url($wa_url); ?>" class="payaman_wishlist-whatsapp-share" target="_blank">
-								<span>WA</span> <?php esc_html_e('WhatsApp', 'payaman_wishlist'); ?>
+								<span>WA</span> <?php esc_html_e('WhatsApp', 'payaman-wishlist'); ?>
 							</a>
 						</div>
 					</div>
@@ -623,19 +623,19 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 						<div class="payaman_wishlist-bulk-left">
 							<label class="payaman_wishlist-bulk-select-all-wrapper">
 								<input type="checkbox" class="payaman_wishlist-bulk-select-all" />
-								<span><?php esc_html_e('Select All', 'payaman_wishlist'); ?></span>
+								<span><?php esc_html_e('Select All', 'payaman-wishlist'); ?></span>
 							</label>
 						</div>
 						<div class="payaman_wishlist-bulk-right">
 							<button type="button" class="button payaman_wishlist-add-all-cart">
-								<?php esc_html_e('Add All to Cart', 'payaman_wishlist'); ?>
+								<?php esc_html_e('Add All to Cart', 'payaman-wishlist'); ?>
 							</button>
 							<button type="button" class="button payaman_wishlist-bulk-remove" disabled>
-								<?php esc_html_e('Remove Selected', 'payaman_wishlist'); ?>
+								<?php esc_html_e('Remove Selected', 'payaman-wishlist'); ?>
 							</button>
 							<?php if (! empty($collections)) : ?>
 								<button type="button" class="button payaman_wishlist-bulk-move-button" disabled>
-									<?php esc_html_e('Move Selected', 'payaman_wishlist'); ?>
+									<?php esc_html_e('Move Selected', 'payaman-wishlist'); ?>
 								</button>
 							<?php endif; ?>
 						</div>
@@ -648,10 +648,10 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 								<th class="payaman_wishlist-col-checkbox">
 									<input type="checkbox" class="payaman_wishlist-bulk-select-all" />
 								</th>
-								<th><?php esc_html_e('Product', 'payaman_wishlist'); ?></th>
-								<th><?php esc_html_e('Price', 'payaman_wishlist'); ?></th>
-								<th><?php esc_html_e('Stock Status', 'payaman_wishlist'); ?></th>
-								<th class="payaman_wishlist-col-actions"><?php esc_html_e('Actions', 'payaman_wishlist'); ?></th>
+								<th><?php esc_html_e('Product', 'payaman-wishlist'); ?></th>
+								<th><?php esc_html_e('Price', 'payaman-wishlist'); ?></th>
+								<th><?php esc_html_e('Stock Status', 'payaman-wishlist'); ?></th>
+								<th class="payaman_wishlist-col-actions"><?php esc_html_e('Actions', 'payaman-wishlist'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -672,25 +672,25 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 									<td class="payaman_wishlist-col-checkbox">
 										<input type="checkbox" class="payaman_wishlist-bulk-checkbox" value="<?php echo esc_attr($product_id); ?>" />
 									</td>
-									<td class="payaman_wishlist-table__product" data-title="<?php esc_attr_e('Product', 'payaman_wishlist'); ?>">
+									<td class="payaman_wishlist-table__product" data-title="<?php esc_attr_e('Product', 'payaman-wishlist'); ?>">
 										<a href="<?php the_permalink(); ?>">
 											<?php echo wp_kses_post($product->get_image('thumbnail')); ?>
 											<span class="payaman_wishlist-table__title"><?php echo esc_html(get_the_title()); ?></span>
 										</a>
 									</td>
-									<td class="payaman_wishlist-table__price" data-title="<?php esc_attr_e('Price', 'payaman_wishlist'); ?>">
+									<td class="payaman_wishlist-table__price" data-title="<?php esc_attr_e('Price', 'payaman-wishlist'); ?>">
 										<?php echo wp_kses_post($product->get_price_html()); ?>
 									</td>
-									<td class="payaman_wishlist-table__stock" data-title="<?php esc_attr_e('Stock Status', 'payaman_wishlist'); ?>">
-										<?php echo $product->is_in_stock() ? '<span class="payaman_wishlist-in-stock">' . esc_html__('In Stock', 'payaman_wishlist') . '</span>' : '<span class="payaman_wishlist-out-of-stock">' . esc_html__('Out of Stock', 'payaman_wishlist') . '</span>'; ?>
+									<td class="payaman_wishlist-table__stock" data-title="<?php esc_attr_e('Stock Status', 'payaman-wishlist'); ?>">
+										<?php echo $product->is_in_stock() ? '<span class="payaman_wishlist-in-stock">' . esc_html__('In Stock', 'payaman-wishlist') . '</span>' : '<span class="payaman_wishlist-out-of-stock">' . esc_html__('Out of Stock', 'payaman-wishlist') . '</span>'; ?>
 									</td>
-									<td class="payaman_wishlist-table__actions" data-title="<?php esc_attr_e('Actions', 'payaman_wishlist'); ?>">
+									<td class="payaman_wishlist-table__actions" data-title="<?php esc_attr_e('Actions', 'payaman-wishlist'); ?>">
 										<?php if ($product->is_type('simple')) : ?>
-											<a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-quantity="1" class="button product_type_simple add_to_cart_button ajax_add_to_cart" data-product_id="<?php echo esc_attr($product_id); ?>" rel="nofollow"><?php esc_html_e('Add to Cart', 'payaman_wishlist'); ?></a>
+											<a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-quantity="1" class="button product_type_simple add_to_cart_button ajax_add_to_cart" data-product_id="<?php echo esc_attr($product_id); ?>" rel="nofollow"><?php esc_html_e('Add to Cart', 'payaman-wishlist'); ?></a>
 										<?php else : ?>
-											<a href="<?php the_permalink(); ?>" class="button"><?php esc_html_e('Select Options', 'payaman_wishlist'); ?></a>
+											<a href="<?php the_permalink(); ?>" class="button"><?php esc_html_e('Select Options', 'payaman-wishlist'); ?></a>
 										<?php endif; ?>
-										<button type="button" class="payaman_wishlist-remove-item" data-product-id="<?php echo esc_attr($product_id); ?>" data-collection-id="<?php echo esc_attr($current_collection_id); ?>"><?php esc_html_e('Remove', 'payaman_wishlist'); ?></button>
+										<button type="button" class="payaman_wishlist-remove-item" data-product-id="<?php echo esc_attr($product_id); ?>" data-collection-id="<?php echo esc_attr($current_collection_id); ?>"><?php esc_html_e('Remove', 'payaman-wishlist'); ?></button>
 									</td>
 								</tr>
 							<?php endwhile; ?>
@@ -709,7 +709,7 @@ if (! class_exists('Payaman_Wishlist_Front')) {
 		 */
 		private function render_empty_message()
 		{
-			echo '<p class="payaman_wishlist-empty-message">' . esc_html__('No wishlist products found.', 'payaman_wishlist') . '</p>';
+			echo '<p class="payaman_wishlist-empty-message">' . esc_html__('No wishlist products found.', 'payaman-wishlist') . '</p>';
 		}
 
 		/**
