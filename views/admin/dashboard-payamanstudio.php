@@ -35,7 +35,7 @@ $payaman_wishlist_ecosystem = array(
 		'slug'        => 'payaman-wishlist',
 		'name'        => 'Payaman Wishlist',
 		'tagline'     => __('Smart Wishlist & Email Automation for WooCommerce', 'payaman-wishlist'),
-		'description' => __('Izinkan pelanggan menyimpan produk favorit, mengelola koleksi publik/privat, dan otomatisasi retargeting email stok & penurunan harga.', 'payaman-wishlist'),
+		'description' => __('Allow customers to bookmark favorite products, organize public/private collections, and automate stock & price drop email retargeting.', 'payaman-wishlist'),
 		'icon'        => 'dashicons-heart',
 		'installed'   => true,
 		'settings'    => admin_url('admin.php?page=payaman_wishlist'),
@@ -44,7 +44,7 @@ $payaman_wishlist_ecosystem = array(
 		'slug'        => 'payaman-points-rewards',
 		'name'        => 'Payaman Points & Rewards',
 		'tagline'     => __('Loyalty Program & Customer Engagement', 'payaman-wishlist'),
-		'description' => __('Tingkatkan retensi pelanggan dengan sistem reward poin belanja, level membership, dan penukaran kupon diskon.', 'payaman-wishlist'),
+		'description' => __('Boost customer retention with shopping reward points, membership tiers, and discount coupon redemptions.', 'payaman-wishlist'),
 		'icon'        => 'dashicons-awards',
 		'installed'   => false,
 		'url'         => 'https://payamanstudio.com/',
@@ -53,7 +53,7 @@ $payaman_wishlist_ecosystem = array(
 		'slug'        => 'payaman-quick-view',
 		'name'        => 'Payaman Quick View',
 		'tagline'     => __('Fast Product Preview Modal', 'payaman-wishlist'),
-		'description' => __('Memungkinkan pelanggan melihat detail produk dan langsung menambahkan ke keranjang tanpa meninggalkan halaman katalog.', 'payaman-wishlist'),
+		'description' => __('Enable shoppers to preview product details and add items to cart seamlessly without leaving catalog pages.', 'payaman-wishlist'),
 		'icon'        => 'dashicons-visibility',
 		'installed'   => false,
 		'url'         => 'https://payamanstudio.com/',
@@ -62,7 +62,7 @@ $payaman_wishlist_ecosystem = array(
 		'slug'        => 'payaman-checkout-field-editor',
 		'name'        => 'Payaman Checkout Editor',
 		'tagline'     => __('Custom Checkout Field Manager', 'payaman-wishlist'),
-		'description' => __('Kustomisasi formulir checkout WooCommerce dengan mudah, tambah kolom kustom, dan atur alur pemesanan yang lebih cepat.', 'payaman-wishlist'),
+		'description' => __('Easily customize WooCommerce checkout fields, add custom input fields, and streamline the ordering process.', 'payaman-wishlist'),
 		'icon'        => 'dashicons-cart',
 		'installed'   => false,
 		'url'         => 'https://payamanstudio.com/',
@@ -83,25 +83,25 @@ $payaman_wishlist_ecosystem = array(
 					</h1>
 				</div>
 				<p style="margin: 0; color: #c3c4c7; font-size: 14px; max-width: 600px;">
-					<?php esc_html_e('Pusat manajemen dan ekosistem plugin WooCommerce dari Payaman Studio untuk mengoptimalkan konversi toko online Anda.', 'payaman-wishlist'); ?>
+					<?php esc_html_e('Centralized management hub and WooCommerce plugin ecosystem by Payaman Studio to enhance your store conversion.', 'payaman-wishlist'); ?>
 				</p>
 			</div>
 			<div>
 				<a href="https://payamanstudio.com/" target="_blank" rel="noopener noreferrer" class="button" style="background: #2271b1; color: #fff; border: none; padding: 6px 18px; border-radius: 6px; font-weight: 600;">
-					<?php esc_html_e('Kunjungi Website', 'payaman-wishlist'); ?> &rarr;
+					<?php esc_html_e('Visit Website', 'payaman-wishlist'); ?> &rarr;
 				</a>
 			</div>
 		</div>
 	</div>
 
-	<!-- Section 1: Plugin Terpasang -->
+	<!-- Section 1: Installed Plugins -->
 	<div style="margin-bottom: 35px;">
 		<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
 			<h2 style="font-size: 18px; font-weight: 600; margin: 0; color: #1d2327;">
-				<?php esc_html_e('Plugin Payaman Terpasang', 'payaman-wishlist'); ?>
+				<?php esc_html_e('Installed Payaman Plugins', 'payaman-wishlist'); ?>
 			</h2>
 			<span style="background: #e8f0fe; color: #1a73e8; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">
-				<?php echo esc_html(count($payaman_wishlist_installed)); ?> <?php esc_html_e('Plugin Terdeteksi', 'payaman-wishlist'); ?>
+				<?php echo esc_html(count($payaman_wishlist_installed)); ?> <?php esc_html_e('Plugins Detected', 'payaman-wishlist'); ?>
 			</span>
 		</div>
 
@@ -127,11 +127,11 @@ $payaman_wishlist_ecosystem = array(
 								<div>
 									<?php if ($payaman_wishlist_plugin['is_active']) : ?>
 										<span style="background: #edfaef; color: #1a7f37; border: 1px solid #46b450; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;">
-											<?php esc_html_e('Aktif', 'payaman-wishlist'); ?>
+											<?php esc_html_e('Active', 'payaman-wishlist'); ?>
 										</span>
 									<?php else : ?>
 										<span style="background: #f6f7f7; color: #646970; border: 1px solid #dcdcde; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;">
-											<?php esc_html_e('Nonaktif', 'payaman-wishlist'); ?>
+											<?php esc_html_e('Inactive', 'payaman-wishlist'); ?>
 										</span>
 									<?php endif; ?>
 								</div>
@@ -148,7 +148,7 @@ $payaman_wishlist_ecosystem = array(
 							</span>
 							<?php if ($payaman_wishlist_plugin['is_active'] && ! empty($payaman_wishlist_plugin['settings_url'])) : ?>
 								<a href="<?php echo esc_url($payaman_wishlist_plugin['settings_url']); ?>" class="button button-primary" style="font-weight: 600;">
-									<?php esc_html_e('Pengaturan Plugin', 'payaman-wishlist'); ?> &rarr;
+									<?php esc_html_e('Plugin Settings', 'payaman-wishlist'); ?> &rarr;
 								</a>
 							<?php endif; ?>
 						</div>
@@ -158,14 +158,14 @@ $payaman_wishlist_ecosystem = array(
 		</div>
 	</div>
 
-	<!-- Section 2: Ekosistem Payaman Studio -->
+	<!-- Section 2: Payaman Studio Ecosystem -->
 	<div>
 		<div style="margin-bottom: 15px;">
 			<h2 style="font-size: 18px; font-weight: 600; margin: 0 0 4px 0; color: #1d2327;">
-				<?php esc_html_e('Ekosistem Plugin Payaman Studio', 'payaman-wishlist'); ?>
+				<?php esc_html_e('Payaman Studio Plugin Ecosystem', 'payaman-wishlist'); ?>
 			</h2>
 			<p style="margin: 0; color: #646970; font-size: 13px;">
-				<?php esc_html_e('Koleksi modul dan ekstensi WooCommerce untuk meningkatkan performa toko Anda.', 'payaman-wishlist'); ?>
+				<?php esc_html_e('Collection of WooCommerce extensions designed to boost your online store capability.', 'payaman-wishlist'); ?>
 			</p>
 		</div>
 
@@ -192,11 +192,11 @@ $payaman_wishlist_ecosystem = array(
 					<div style="border-top: 1px solid #f6f7f7; padding-top: 12px;">
 						<?php if (! empty($payaman_wishlist_item['installed'])) : ?>
 							<a href="<?php echo esc_url($payaman_wishlist_item['settings']); ?>" class="button button-secondary" style="width: 100%; text-align: center;">
-								<?php esc_html_e('Kelola Wishlist', 'payaman-wishlist'); ?>
+								<?php esc_html_e('Manage Wishlist', 'payaman-wishlist'); ?>
 							</a>
 						<?php else : ?>
 							<a href="<?php echo esc_url($payaman_wishlist_item['url']); ?>" target="_blank" rel="noopener noreferrer" class="button" style="width: 100%; text-align: center; color: #646970;">
-								<?php esc_html_e('Pelajari Lebih Lanjut', 'payaman-wishlist'); ?> &nearr;
+								<?php esc_html_e('Learn More', 'payaman-wishlist'); ?> &nearr;
 							</a>
 						<?php endif; ?>
 					</div>
