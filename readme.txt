@@ -67,7 +67,7 @@ Back-in-stock and price-drop alert emails support `{user_name}`, `{product_name}
 == Installation ==
 
 1. Make sure **WooCommerce** is installed and active — Payaman Wishlist requires it and will show an admin notice until it is.
-2. Upload the `payaman_wishlist` folder to the `/wp-content/plugins/` directory, or install directly via **Plugins → Add New → search "Payaman Wishlist"** in your WordPress dashboard.
+2. Upload the `payaman-wishlist` folder to the `/wp-content/plugins/` directory, or install directly via **Plugins → Add New → search "Payaman Wishlist"** in your WordPress dashboard.
 3. Activate the plugin through the **Plugins** screen. A **Wishlist** page with the `[payaman_wishlist_list]` shortcode is created automatically on activation.
 4. Go to **Payaman Studio → Payaman Wishlist** in your dashboard menu to configure settings:
    * **General** — enable/disable the plugin, require login, back-in-stock and price-drop alerts
