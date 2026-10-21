@@ -25,7 +25,9 @@ foreach ($payaman_wishlist_all_plugins as $payaman_wishlist_file => $payaman_wis
 			'plugin_file' => $payaman_wishlist_file,
 			'settings_url'=> (strpos($payaman_wishlist_file, 'payaman-wishlist') !== false || strpos($payaman_wishlist_file, 'payaman_wishlist') !== false)
 				? admin_url('admin.php?page=payaman_wishlist')
-				: '',
+				: ((strpos($payaman_wishlist_file, 'payaman-whatsapp-quick-buy') !== false || strpos($payaman_wishlist_file, 'payaman-wa') !== false)
+					? admin_url('admin.php?page=payaman-wa-quick-buy')
+					: ''),
 		);
 	}
 }
@@ -39,6 +41,15 @@ $payaman_wishlist_ecosystem = array(
 		'icon'        => 'dashicons-heart',
 		'installed'   => true,
 		'settings'    => admin_url('admin.php?page=payaman_wishlist'),
+	),
+	array(
+		'slug'        => 'payaman-whatsapp-quick-buy',
+		'name'        => 'Payaman WhatsApp Quick Buy',
+		'tagline'     => __('Direct WhatsApp Checkout & Multi-Agent CS for WooCommerce', 'payaman-wishlist'),
+		'description' => __('Accelerate purchases by letting customers order directly via WhatsApp with auto-generated order details and smart agent routing.', 'payaman-wishlist'),
+		'icon'        => 'dashicons-format-chat',
+		'installed'   => class_exists('Payaman_WhatsApp_Quick_Buy') || defined('PAYAMAN_WA_PLUGIN_DIR'),
+		'settings'    => admin_url('admin.php?page=payaman-wa-quick-buy'),
 	),
 	array(
 		'slug'        => 'payaman-points-rewards',
